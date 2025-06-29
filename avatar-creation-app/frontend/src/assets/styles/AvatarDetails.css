@@ -1,0 +1,123 @@
+.avatar-details-body {
+    min-height: 100vh;
+    width: 100vw;
+    background-image: url('../images/forest.jpeg')no-repeat center center fixed;
+    background-size: cover;
+    background-position: center;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-sizing: border-box;
+}
+
+.avatar-details-content {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 40px 30px;
+    border-radius: 15px;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-details-content:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0, 100, 0, 0.2);
+}
+
+.avatar-details-heading {
+    color: white;
+    font-size: 32px;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 3px rgba(46, 125, 50, 0.2);
+}
+
+.avatar-details-text {
+    font-size: 1.2rem;
+    color: #e0e0e0;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+
+
+.avatar-form .form-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    font-size: 1.05rem;
+    color: #76b034;
+    font-weight: 600;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+
+select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #2b4411;
+    border-radius: 10px;
+    font-size: 1rem;
+    background-color: #bbe77d8d;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%233e8e41" d="M2 0L0 2h4z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px 12px;
+}
+
+select:focus {
+    outline: none;
+    border-color: #d9ded3;
+    box-shadow: 0 0 6px rgba(139, 195, 74, 0.506);
+}
+
+.back-button {
+    display: inline-block;
+    padding: 12px 30px;
+    margin-top: 30px;
+    font-size: 1.1rem;
+    color: white;
+    background-color:#1a4d1a;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    text-align: center;
+}
+
+.back-button:hover {
+    background-color: #43a047;
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+}
+
+.back-button:active {
+    background-color: #2e7d32;
+    transform: scale(1);
+    box-shadow: 0 3px 6px rgba(46, 125, 50, 0.3);
+}
+
+
+.form-group textarea {
+  width: 90%;
+  margin-left: 10px; /* Move the box slightly to the left */
+  padding: 12px;
+  font-size: 1rem;
+  resize: none; /* Prevent resizing */
+  border-radius: 10px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
