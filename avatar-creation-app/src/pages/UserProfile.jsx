@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import '../assets/styles/UserProfile.css';
 
-const LANGUAGES = ["English", "Hindi", "Spanish", "French", "Mandarin", "Other"];
+//const LANGUAGES = ["English", "Hindi", "Spanish", "French", "Mandarin", "Other"];//
 
 const UserProfile = () => {
   const history = useHistory();
@@ -10,16 +10,16 @@ const UserProfile = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
-  const [userLocation, setUserLocation] = useState(null);
+  //const [userLocation, setUserLocation] = useState(null);//
   const [age, setAge] = useState([]);
   const [gender, setGender] = useState('');
   const [ethnicity, setEthnicity] = useState('');
   const [occupation, setOccupation] = useState('');
-  const [relationshipStatus, setRelationshipStatus] = useState('');
+  //const [relationshipStatus, setRelationshipStatus] = useState('');//
   const [languages, setLanguages] = useState([]);
-  const [religion, setReligion] = useState('');
-  const [nationality, setNationality] = useState('');
-  const [disability, setDisability] = useState('');
+  //const [religion, setReligion] = useState('');//
+  //const [nationality, setNationality] = useState('');//
+  //const [disability, setDisability] = useState('');//
 
   useEffect(() => {
     if (!navigator.geolocation) {
