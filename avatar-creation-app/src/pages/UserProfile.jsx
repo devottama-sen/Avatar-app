@@ -2,24 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import '../assets/styles/UserProfile.css';
 
-//const LANGUAGES = ["English", "Hindi", "Spanish", "French", "Mandarin", "Other"];//
-
 const UserProfile = () => {
   const history = useHistory();
 
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
-  //const [userLocation, setUserLocation] = useState(null);//
   const [age, setAge] = useState([]);
   const [gender, setGender] = useState('');
   const [ethnicity, setEthnicity] = useState('');
   const [occupation, setOccupation] = useState('');
-  //const [relationshipStatus, setRelationshipStatus] = useState('');//
   const [languages, setLanguages] = useState([]);
-  //const [religion, setReligion] = useState('');//
-  //const [nationality, setNationality] = useState('');//
-  //const [disability, setDisability] = useState('');//
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -31,7 +24,6 @@ const UserProfile = () => {
       async (position) => {
         const { latitude, longitude } = position.coords;
         const location = { latitude, longitude };
-        setUserLocation(location);
         localStorage.setItem("location", JSON.stringify(location));
 
         try {
@@ -69,11 +61,7 @@ const UserProfile = () => {
     localStorage.setItem("gender", gender);
     localStorage.setItem("ethnicity", ethnicity);
     localStorage.setItem("occupation", occupation);
-    localStorage.setItem("relationship_status", relationshipStatus);
     localStorage.setItem("languages", JSON.stringify(languages));
-    localStorage.setItem("religion", religion);
-    localStorage.setItem("nationality", nationality);
-    localStorage.setItem("disability", disability);
     localStorage.setItem("user_password", password);
 
     return true;
@@ -83,12 +71,6 @@ const UserProfile = () => {
     if (handleSaveProfile()) {
       history.push('/avatar-details');
     }
-  };
-
-  const toggleLanguage = (lang) => {
-    setLanguages((prev) =>
-      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang]
-    );
   };
 
   return (
@@ -119,29 +101,28 @@ const UserProfile = () => {
           />
         </div>
 
-      <div className="form-group">
-  <label>Age Range:</label>
-  <div className="checkbox-group">
-    {["13-18", "19-25", "26-35", "36-50", "51-65", "66-100"].map((range) => (
-      <label key={range} className="checkbox-item">
-        <input
-          type="checkbox"
-          value={range}
-          checked={age.includes(range)}
-          onChange={(e) => {
-            if (e.target.checked) {
-              setAge([...age, range]);
-            } else {
-              setAge(age.filter((r) => r !== range));
-            }
-          }}
-        />
-        {range}
-      </label>
-    ))}
-  </div>
-</div>
-
+        <div className="form-group">
+          <label>Age Range:</label>
+          <div className="checkbox-group">
+            {["13-18", "19-25", "26-35", "36-50", "51-65", "66-100"].map((range) => (
+              <label key={range} className="checkbox-item">
+                <input
+                  type="checkbox"
+                  value={range}
+                  checked={age.includes(range)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setAge([...age, range]);
+                    } else {
+                      setAge(age.filter((r) => r !== range));
+                    }
+                  }}
+                />
+                {range}
+              </label>
+            ))}
+          </div>
+        </div>
 
         <div className="form-group">
           <label htmlFor="gender">Gender</label>
