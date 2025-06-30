@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 from pymongo import MongoClient
 import base64
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,6 +9,11 @@ from google import genai
 from google.genai import types
 from datetime import datetime
 import uvicorn
+import os
+
+MONGO_URI = os.getenv("MONGO_URI")
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # MongoDB Setup
 client = MongoClient("mongodb+srv://devottama_30:Pisuke3012sen@cluster0.fb2hmak.mongodb.net/avatarDB?retryWrites=true&w=majority&appName=Cluster0")
@@ -33,7 +40,7 @@ class UserAvatarRequest(BaseModel):
 
 # Gemini Image Generator
 def generate_avatar_bytes(prompt: str) -> bytes:
-    API_KEY = "AIzaSyA03nJSHyZhTCB-ueMKgSQjiHkRNggT1Fc"
+    API_KEY = os.getenv("GOOGLE_API_KEY")
     client = genai.Client(api_key=API_KEY)
     try:
         response = client.models.generate_content(

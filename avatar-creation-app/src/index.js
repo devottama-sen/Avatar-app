@@ -1,13 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import './assets/styles/index.css';
 import App from './app';
 import ErrorBoundary from './pages/ErrorBoundary';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
-root.render(
+ReactDOM.render(
   <ErrorBoundary>
     <App />
-  </ErrorBoundary>
+  </ErrorBoundary>,
+  document.getElementById('root')
 );
+

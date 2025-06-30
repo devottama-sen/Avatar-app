@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import '../assets/styles/AvatarUnified.css'; 
+import '../assets/styles/AvatarUnified.css';
+
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AvatarDetails = () => {
   const [prompt, setPrompt] = useState('');
@@ -9,27 +11,26 @@ const AvatarDetails = () => {
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState('');
   const [country, setCountry] = useState('');
-  const [remaining, setRemaining] = useState(undefined);  // initially undefined
+  const [remaining, setRemaining] = useState(undefined);
   const history = useHistory();
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem("user_id");
-    const storedCountry = localStorage.getItem("country");
+    const storedUserId = localStorage.getItem('user_id');
+    const storedCountry = localStorage.getItem('country');
 
     if (!storedUserId) {
-      setError("User ID missing. Please complete your profile.");
+      setError('User ID missing. Please complete your profile.');
       setTimeout(() => history.push('/user-profile'), 3000);
       return;
     }
 
     setUserId(storedUserId);
 
-    // Fetch avatar count
-    fetch(`http://localhost:8000/avatar-count?userId=${storedUserId}`)
+    fetch(`${BASE_URL}/avatar-count?userId=${storedUserId}`)
       .then(res => res.json())
       .then(data => setRemaining(data.remaining))
       .catch(err => {
-        console.error("Error fetching avatar count:", err);
+        console.error('Error fetching avatar count:', err);
         setRemaining(null);
       });
 
@@ -47,14 +48,14 @@ const AvatarDetails = () => {
             const detectedCountry = locationData.countryName;
             if (detectedCountry) {
               setCountry(detectedCountry);
-              localStorage.setItem("country", detectedCountry);
+              localStorage.setItem('country', detectedCountry);
             }
           } catch (err) {
-            console.error("Location fetch failed:", err);
+            console.error('Location fetch failed:', err);
           }
         },
         (err) => {
-          console.warn("Geolocation error:", err);
+          console.warn('Geolocation error:', err);
         }
       );
     }
@@ -64,12 +65,12 @@ const AvatarDetails = () => {
     e.preventDefault();
 
     if (!userId || !prompt.trim()) {
-      setError("Please enter all required fields.");
+      setError('Please enter all required fields.');
       return;
     }
 
     if (remaining <= 0) {
-      setError("You’ve reached your 10-image limit.");
+      setError('You’ve reached your 10-image limit.');
       return;
     }
 
@@ -77,19 +78,19 @@ const AvatarDetails = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/store-user-avatar', {
+      const response = await fetch(`${BASE_URL}/store-user-avatar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          user_id: userId, 
-          country: country || "unknown", 
-          prompt 
+        body: JSON.stringify({
+          user_id: userId,
+          country: country || 'unknown',
+          prompt,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to generate avatar.");
+        throw new Error(errorData.detail || 'Failed to generate avatar.');
       }
 
       const data = await response.json();
@@ -140,9 +141,7 @@ const AvatarDetails = () => {
               <button
                 type="submit"
                 className="generate-button"
-                disabled={
-                  loading || !prompt.trim() || (remaining !== undefined && remaining <= 0)
-                }
+                disabled={loading || !prompt.trim() || (remaining !== undefined && remaining <= 0)}
               >
                 {loading ? 'Generating...' : 'Generate Avatar'}
               </button>
@@ -170,10 +169,7 @@ const AvatarDetails = () => {
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={() => history.push('/avatars')}
-        >
+        <button type="button" onClick={() => history.push('/avatars')}>
           Show All Generated Avatars
         </button>
       </div>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import '../assets/styles/AllAvatarsPage.css';
 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 const AllAvatarsPage = () => {
   const [avatars, setAvatars] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ const AllAvatarsPage = () => {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:8000/avatars?userId=${userId}`)
+    fetch(`${BASE_URL}/avatars?userId=${userId}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -61,7 +63,7 @@ const AllAvatarsPage = () => {
               className="avatar-image"
             />
             <div className="avatar-info">
-              <p><strong>Name:</strong> {avatar.user_id}</p>
+              <p><strong>User ID:</strong> {avatar.user_id}</p>
               <p><strong>Country:</strong> {avatar.country}</p>
               <p><strong>Prompt:</strong> {avatar.prompt}</p>
               <p><strong>Generated At:</strong> {new Date(avatar.timestamp).toLocaleString()}</p>
