@@ -38,10 +38,14 @@ class UserAvatarRequest(BaseModel):
     country: str
     prompt: str
 
-# Gemini Image Generator
 def generate_avatar_bytes(prompt: str) -> bytes:
     API_KEY = os.getenv("GOOGLE_API_KEY")
-    genai.configure(api_key=str(API_KEY).strip())  # added strip for safety
+    print("GOOGLE_API_KEY:", API_KEY)  # <-- Fixed indentation
+
+    if not API_KEY:
+        raise RuntimeError("GOOGLE_API_KEY not set in environment variables")
+
+    genai.configure(api_key=API_KEY)
 
     try:
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -59,39 +63,6 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         raise RuntimeError("No image data found in Gemini response")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
-
-@app.post("/store-user-avatar")
-async def store_user_avatar(req: UserAvatarRequest):
-    try:
-        existing_count = users_collection.count_documents({"user_id": req.user_id})
-        if existing_count >= 10:
-            raise HTTPException(
-                status_code=403,
-                detail="Avatar generation limit (10) reached for this user."
-            )
-
-        img_bytes = generate_avatar_bytes(req.prompt)
-
-        user_doc = {
-            "user_id": req.user_id,
-            "country": req.country,
-            "prompt": req.prompt,
-            "image_binary": img_bytes,
-            "timestamp": datetime.utcnow()
-        }
-
-        users_collection.insert_one(user_doc)
-
-        return {
-            "message": "User and avatar details stored successfully!",
-            "prompt": req.prompt,
-            "image_base64": base64.b64encode(img_bytes).decode("utf-8")
-        }
-
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/avatars")
 async def get_avatars(user_id: str | None = Query(default=None, alias="userId")):
