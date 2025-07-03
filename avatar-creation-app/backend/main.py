@@ -39,12 +39,25 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 # Gemini Image Generator
+# Gemini Image Generator
 def generate_avatar_bytes(prompt: str) -> bytes:
-    API_KEY = os.getenv("GOOGLE_API_KEY")
-    genai.configure(api_key=API_KEY)
-
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")  # You can also try "gemini-pro-vision"
+        # Load service account JSON from environment variable
+        service_account_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+        if not service_account_json:
+            raise RuntimeError("GOOGLE_APPLICATION_CREDENTIALS_JSON is not set in environment.")
+
+        # Write the JSON to a file
+        with open("service_account.json", "w") as f:
+            f.write(service_account_json)
+
+        # Set the environment variable for ADC
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service_account.json"
+
+        # Configure Gemini
+        genai.configure()
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
 
         if not response.parts:
@@ -57,6 +70,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
                 return part.data
 
         raise RuntimeError("No image data found in Gemini response")
+
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
 
