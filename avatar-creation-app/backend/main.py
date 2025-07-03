@@ -1,22 +1,22 @@
 from dotenv import load_dotenv
 load_dotenv()
+
 from pymongo import MongoClient
 import base64
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from datetime import datetime
 import uvicorn
 import os
 
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = os.getenv("MONGO_URI","mongodb://localhost:27017/")
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # MongoDB Setup
-client = MongoClient("mongodb+srv://devottama_30:Pisuke3012sen@cluster0.fb2hmak.mongodb.net/avatarDB?retryWrites=true&w=majority&appName=Cluster0")
+client = MongoClient(MONGO_URI)
 db = client["avatarDB"]
 users_collection = db["users"]
 
@@ -41,20 +41,20 @@ class UserAvatarRequest(BaseModel):
 # Gemini Image Generator
 def generate_avatar_bytes(prompt: str) -> bytes:
     API_KEY = os.getenv("GOOGLE_API_KEY")
-    client = genai.Client(api_key=API_KEY)
+    genai.configure(api_key=API_KEY)
+
     try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash-preview-image-generation",
-            contents=prompt,
-            config=types.GenerateContentConfig(response_modalities=['TEXT', 'IMAGE'])
-        )
+        model = genai.GenerativeModel("gemini-1.5-flash")  # You can also try "gemini-pro-vision"
+        response = model.generate_content(prompt)
 
-        if not response.candidates:
-            raise RuntimeError("Gemini API returned no candidates")
+        if not response.parts:
+            raise RuntimeError("Gemini API returned no content")
 
-        for part in response.candidates[0].content.parts:
-            if part.inline_data:
+        for part in response.parts:
+            if hasattr(part, "inline_data"):
                 return part.inline_data.data
+            elif hasattr(part, "data"):
+                return part.data
 
         raise RuntimeError("No image data found in Gemini response")
     except Exception as e:
@@ -155,4 +155,4 @@ def read_root():
     return {"message": "Avatar API is running"}
 
 if __name__ == "__main__":
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
