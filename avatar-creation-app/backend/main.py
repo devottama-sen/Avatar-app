@@ -1,15 +1,18 @@
+import os
 from dotenv import load_dotenv
 load_dotenv()
+
+import google.generativeai as genai
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))  # ✅ Global configuration
 
 from pymongo import MongoClient
 import base64
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
-import google.generativeai as genai
 from datetime import datetime
 import uvicorn
-import os
+
 
 MONGO_URI = os.getenv("MONGO_URI","mongodb://localhost:27017/")
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -39,14 +42,6 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 def generate_avatar_bytes(prompt: str) -> bytes:
-    API_KEY = os.getenv("GOOGLE_API_KEY")
-    print("GOOGLE_API_KEY:", API_KEY)  # <-- Fixed indentation
-
-    if not API_KEY:
-        raise RuntimeError("GOOGLE_API_KEY not set in environment variables")
-
-    genai.configure(api_key=API_KEY)
-
     try:
         model = genai.GenerativeModel("gemini-1.5-flash")
         response = model.generate_content(prompt)
@@ -63,39 +58,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         raise RuntimeError("No image data found in Gemini response")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
-
-@app.get("/avatars")
-async def get_avatars(user_id: str | None = Query(default=None, alias="userId")):
-    try:
-        query_filter = {"user_id": user_id} if user_id else {}
-        docs = users_collection.find(query_filter)
-        result = []
-
-        for doc in docs:
-            user_id = doc.get("user_id", "")
-            prompt = doc.get("prompt", "")
-            country = doc.get("country", "")
-            timestamp = doc.get("timestamp")
-            raw_bytes = doc.get("image_binary", b"")
-
-            try:
-                image_base64 = base64.b64encode(raw_bytes).decode("utf-8")
-            except Exception:
-                image_base64 = ""
-
-            result.append({
-                "user_id": user_id,
-                "prompt": prompt,
-                "country": country,
-                "timestamp": timestamp,
-                "image_base64": image_base64
-            })
-
-        return result
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve avatars: {str(e)}")
-
+    
 @app.get("/avatar-count")
 async def get_avatar_count(user_id: str = Query(..., alias="userId")):
     try:
