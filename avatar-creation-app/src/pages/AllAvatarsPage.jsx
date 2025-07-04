@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../assets/styles/AllAvatarsPage.css';
-
-const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+import BASE_URL from '../api'; // ✅ Import the shared base URL
 
 const AllAvatarsPage = () => {
   const [avatars, setAvatars] = useState([]);

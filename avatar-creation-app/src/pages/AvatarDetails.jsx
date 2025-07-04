@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import '../assets/styles/AvatarUnified.css';
-
-const BASE_URL = process.env.REACT_APP_BACKEND_URL;
+import BASE_URL from '../api'; // ✅ Importing from shared config
 
 const AvatarDetails = () => {
   const [prompt, setPrompt] = useState('');
