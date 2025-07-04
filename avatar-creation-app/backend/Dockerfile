@@ -2,6 +2,8 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+COPY google-service-account.json /app/service-account.json
+
 # Install git first
 RUN apt-get update && apt-get install -y git && apt-get clean
 
