@@ -1,3 +1,4 @@
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "service-account.json"
 import os
 from dotenv import load_dotenv
 load_dotenv()
