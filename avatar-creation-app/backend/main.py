@@ -31,7 +31,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://avatar-afw2ftbiu-devottama-sens-projects.vercel.app",  # ✅ your Vercel frontend
+        "https://avatar-m4b2lwp08-devottama-sens-projects.vercel.app",  # ✅ your Vercel frontend
         "http://localhost:3000",  # ✅ local dev
     ],
     allow_credentials=True,
