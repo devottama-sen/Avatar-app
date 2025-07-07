@@ -93,7 +93,7 @@ const AvatarDetails = () => {
       }
 
       const data = await response.json();
-      setImageBase64(`data:image/png;base64,${data.image_base64}`);
+      setImageBase64(`data:image/png;base64,${data.image}`);
       setRemaining(prev => (prev !== undefined ? prev - 1 : 0));
     } catch (err) {
       console.error('Error:', err);

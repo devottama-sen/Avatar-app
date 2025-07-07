@@ -32,11 +32,11 @@ const AllAvatarsPage = () => {
       return res.json();
     })
     .then((data) => {
-      console.log("Fetched avatars:", data);
-      if (Array.isArray(data.avatars) && data.avatars.length > 0) {
-        console.log("Sample base64:", data.avatars[0].image.slice(0, 50));
-      }
-      setAvatars(data.avatars || []);
+  console.log("Fetched avatars:", data);
+  if (data.avatars?.length > 0) {
+    console.log("Sample base64:", data.avatars[0].image.slice(0, 50));
+  }
+  setAvatars(data.avatars || []);
       setLoading(false);  // ✅ stop loading on success
     })
     .catch((err) => {
@@ -57,7 +57,7 @@ const AllAvatarsPage = () => {
         {avatars.map((avatar, index) => (
           <div key={index} className="avatar-card">
             <img
-              src={`data:image/png;base64,${avatar.image_base64}`}
+              src={`data:image/png;base64,${avatar.image}`}
               alt={`Avatar of ${avatar.user_id}`}
               className="avatar-image"
             />
