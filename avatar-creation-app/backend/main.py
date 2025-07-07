@@ -15,11 +15,12 @@ from pydantic import BaseModel
 from datetime import datetime
 import uvicorn
 
+# Environment variables
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# MongoDB Setup
+# MongoDB setup
 client = MongoClient(MONGO_URI)
 db = client["avatarDB"]
 users_collection = db["users"]
@@ -27,27 +28,26 @@ users_collection = db["users"]
 # FastAPI app
 app = FastAPI()
 
-# CORS Configuration
+# ✅ CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://avatar-app-mu.vercel.app",  # ✅ current Vercel frontend
-        "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",  # ✅ old
-        "http://localhost:3000",  # ✅ local dev
+        "https://avatar-app-mu.vercel.app",
+        "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
+        "http://localhost:3000",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# Pydantic Model
+# Pydantic model
 class UserAvatarRequest(BaseModel):
     user_id: str
     country: str
     prompt: str
 
-# Avatar generation logic
+# ✅ Avatar generation logic
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         model = genai.GenerativeModel("gemini-1.5-flash")
@@ -66,8 +66,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
 
-# Routes
-
+# ✅ Routes
 @app.get("/")
 def read_root():
     return {"message": "Avatar API is running"}
@@ -122,7 +121,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
             avatars.append({
                 "prompt": doc.get("prompt", ""),
                 "timestamp": doc.get("timestamp", ""),
-                "image": base64.b64encode(doc["image_binary"]).decode("utf-8")
+                "image_base64": base64.b64encode(doc["image_binary"]).decode("utf-8")  # ✅ FIXED KEY
             })
         return {"avatars": avatars}
     except Exception as e:
@@ -146,6 +145,5 @@ def insert_test_image():
         return {"error": str(e)}
 
 if __name__ == "__main__":
-    import os
     port = int(os.getenv("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")

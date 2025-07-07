@@ -19,32 +19,32 @@ const AllAvatarsPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!userId) return;
+  if (!userId) return;
 
-    setLoading(true);
-    setError(null);
+  setLoading(true);
+  setError(null);
 
-    fetch(`${BASE_URL}/avatars?userId=${userId}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Fetched avatars:", data);
-        if (data.length > 0) {
-          console.log("Sample base64:", data[0].image_base64.slice(0, 50));
-        }
-        setAvatars(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('Failed to fetch avatars:', err);
-        setError(err.message);
-        setLoading(false);
-      });
-  }, [userId]);
+  fetch(`${BASE_URL}/avatars?userId=${userId}`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log("Fetched avatars:", data);
+      if (Array.isArray(data.avatars) && data.avatars.length > 0) {
+        console.log("Sample base64:", data.avatars[0].image.slice(0, 50));
+      }
+      setAvatars(data.avatars || []);
+      setLoading(false);  // ✅ stop loading on success
+    })
+    .catch((err) => {
+      console.error('Failed to fetch avatars:', err);
+      setError(err.message);
+      setLoading(false);  // ✅ stop loading on error
+    });
+}, [userId]);
 
   if (loading) return <p>Loading user avatars...</p>;
   if (error) return <p>Error loading avatars: {error}</p>;
