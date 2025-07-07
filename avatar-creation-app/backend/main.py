@@ -31,13 +31,15 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://avatar-app-mu.vercel.app/",  # ✅ your Vercel frontend
+        "https://avatar-app-mu.vercel.app",  # ✅ current Vercel frontend
+        "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",  # ✅ old
         "http://localhost:3000",  # ✅ local dev
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Pydantic Model
 class UserAvatarRequest(BaseModel):
