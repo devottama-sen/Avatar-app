@@ -91,6 +91,9 @@ async def store_user_avatar(req: UserAvatarRequest):
             )
 
         img_bytes = generate_avatar_bytes(req.prompt)
+        print("DEBUG: Length of image bytes:", len(img_bytes))
+        if not img_bytes:
+          raise HTTPException(status_code=500, detail="No image data returned from Gemini.")
 
         user_doc = {
             "user_id": req.user_id,
