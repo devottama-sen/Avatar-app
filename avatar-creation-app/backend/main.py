@@ -34,7 +34,8 @@ app.add_middleware(
     allow_origins=[
         "https://avatar-app-mu.vercel.app",
         "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
-        "http://localhost:3000",
+        "http://localhost:3000"
+        "http://0.0.0.0.3000"  # ✅ Added for local,
     ],
     allow_credentials=True,
     allow_methods=["*"],
