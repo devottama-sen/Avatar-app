@@ -1,86 +1,62 @@
-import os
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google-service-account.json"
-
-from dotenv import load_dotenv
-load_dotenv()
-
-import google.generativeai as genai
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
 from pymongo import MongoClient
 import base64
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
+from google import genai
+from google.genai import types
 from datetime import datetime
 import uvicorn
+import os
 
-# Environment variables
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+MONGO_URI = os.getenv("MONGO_URI")
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-# MongoDB setup
-client = MongoClient(MONGO_URI)
+# MongoDB Setup
+client = MongoClient("mongodb+srv://devottama_30:Pisuke3012sen@cluster0.fb2hmak.mongodb.net/avatarDB?retryWrites=true&w=majority&appName=Cluster0")
 db = client["avatarDB"]
 users_collection = db["users"]
 
 # FastAPI app
 app = FastAPI()
 
-# ✅ CORS configuration
+# CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://avatar-app-mu.vercel.app",
-        "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
-        "http://localhost:3000",
-        "http://0.0.0.0:3000"  
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Pydantic model
+# Pydantic Model
 class UserAvatarRequest(BaseModel):
     user_id: str
     country: str
     prompt: str
 
-# ✅ Avatar generation logic
+# Gemini Image Generator
 def generate_avatar_bytes(prompt: str) -> bytes:
+    API_KEY = "AIzaSyA03nJSHyZhTCB-ueMKgSQjiHkRNggT1Fc"
+    client = genai.Client(api_key=API_KEY)
     try:
-        model = genai.GenerativeModel("gemini-1.5-pro")
-        response = model.generate_content(prompt, generation_config={
-            "response_mime_type": "image/png"
-        })
-        print("Gemini response MIME:", response.prompt_feedback)
-        if not response.parts:
-            raise RuntimeError("Gemini API returned no content")
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-preview-image-generation",
+            contents=prompt,
+            config=types.GenerateContentConfig(response_modalities=['TEXT', 'IMAGE'])
+        )
 
-        for part in response.parts:
-            if hasattr(part, "inline_data"):
+        if not response.candidates:
+            raise RuntimeError("Gemini API returned no candidates")
+
+        for part in response.candidates[0].content.parts:
+            if part.inline_data:
                 return part.inline_data.data
-            elif hasattr(part, "data"):
-                return part.data
 
         raise RuntimeError("No image data found in Gemini response")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
-
-# ✅ Routes
-@app.get("/")
-def read_root():
-    return {"message": "Avatar API is running"}
-
-@app.get("/avatar-count")
-async def get_avatar_count(user_id: str = Query(..., alias="userId")):
-    try:
-        count = users_collection.count_documents({"user_id": user_id})
-        return {"count": count, "remaining": max(0, 10 - count)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/store-user-avatar")
 async def store_user_avatar(req: UserAvatarRequest):
@@ -97,6 +73,7 @@ async def store_user_avatar(req: UserAvatarRequest):
         if not img_bytes:
           raise HTTPException(status_code=500, detail="No image data returned from Gemini.")
 
+
         user_doc = {
             "user_id": req.user_id,
             "country": req.country,
@@ -110,7 +87,7 @@ async def store_user_avatar(req: UserAvatarRequest):
         return {
             "message": "User and avatar details stored successfully!",
             "prompt": req.prompt,
-            "image": base64.b64encode(img_bytes).decode("utf-8")
+            "image_base64": base64.b64encode(img_bytes).decode("utf-8")
         }
 
     except HTTPException as e:
@@ -119,17 +96,42 @@ async def store_user_avatar(req: UserAvatarRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/avatars")
-async def get_avatars(user_id: str = Query(..., alias="userId")):
+async def get_avatars(user_id: str | None = Query(default=None, alias="userId")):
     try:
-        cursor = users_collection.find({"user_id": user_id}).sort("timestamp", -1)
-        avatars = []
-        for doc in cursor:
-            avatars.append({
-                "prompt": doc.get("prompt", ""),
-                "timestamp": doc.get("timestamp", ""),
-                "image": base64.b64encode(doc["image_binary"]).decode("utf-8")  # ✅ FIXED KEY
+        query_filter = {"user_id": user_id} if user_id else {}
+        docs = users_collection.find(query_filter)
+        result = []
+
+        for doc in docs:
+            user_id = doc.get("user_id", "")
+            prompt = doc.get("prompt", "")
+            country = doc.get("country", "")
+            timestamp = doc.get("timestamp")
+            raw_bytes = doc.get("image_binary", b"")
+
+            try:
+                image_base64 = base64.b64encode(raw_bytes).decode("utf-8")
+            except Exception:
+                image_base64 = ""
+
+            result.append({
+                "user_id": user_id,
+                "prompt": prompt,
+                "country": country,
+                "timestamp": timestamp,
+                "image_base64": image_base64
             })
-        return {"avatars": avatars}
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve avatars: {str(e)}")
+
+@app.get("/avatar-count")
+async def get_avatar_count(user_id: str = Query(..., alias="userId")):
+    try:
+        count = users_collection.count_documents({"user_id": user_id})
+        return {"count": count, "remaining": max(0, 10 - count)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -150,6 +152,10 @@ def insert_test_image():
     except Exception as e:
         return {"error": str(e)}
 
+@app.get("/")
+def read_root():
+    return {"message": "Avatar API is running"}
+
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, log_level="info")
+
