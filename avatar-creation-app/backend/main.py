@@ -10,9 +10,8 @@ from pymongo import MongoClient
 from datetime import datetime
 import uvicorn
 
-# ✅ Gemini setup (works with image generation)
-from google import genai
-from google.genai import types
+import google.generativeai as genai
+
 
 # MongoDB setup
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
