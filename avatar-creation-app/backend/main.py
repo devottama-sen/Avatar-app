@@ -40,29 +40,25 @@ class UserAvatarRequest(BaseModel):
     country: str
     prompt: str
 
-
-from google.generativeai import GenerativeModel, configure
-from google.generativeai.types import Content
-
+# Function to generate avatar bytes using Gemini API
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
-        # Explicitly specify both TEXT and IMAGE modalities
+        # ✅ Just pass the prompt string
         response = model.generate_content(
-            Content(parts=[{"text": prompt}]),
+            prompt,
             stream=False,
-            generation_config={"response_mime_type": "image/png"},
         )
 
-        # Loop through parts to find image
+        # ✅ Access inline image from parts
         for part in response.parts:
             if hasattr(part, "inline_data") and part.inline_data.mime_type.startswith("image/"):
                 return part.inline_data.data
 
-        raise RuntimeError("No image data found in response")
+        raise RuntimeError("No image data found in Gemini response.")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
 
