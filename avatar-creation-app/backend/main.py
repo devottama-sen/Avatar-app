@@ -39,17 +39,17 @@ class UserAvatarRequest(BaseModel):
     country: str
     prompt: str
 
-# Gemini Configuration and Image Generation
-from google.generativeai import GenerativeModel, configure, types
+from google.generativeai import GenerativeModel, configure
 
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
+        # ✅ Correct usage
         response = model.generate_content(
             contents=prompt,
-            generation_config=types.GenerationConfig(response_modalities=["TEXT", "IMAGE"])
+            response_modalities=["IMAGE"]  # <== moved outside of generation_config
         )
 
         if not response.candidates:
