@@ -33,7 +33,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Pydantic Model
+# Pydantic model
 class UserAvatarRequest(BaseModel):
     user_id: str
     country: str
@@ -44,22 +44,19 @@ from google.generativeai import GenerativeModel, configure
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
-        model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
-        # ✅ Correct usage
-        response = model.generate_content(
-            contents=prompt,
-            response_modalities=["IMAGE"]  # <== moved outside of generation_config
-        )
+        model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
+        response = model.generate_content(prompt)
 
         if not response.candidates:
             raise RuntimeError("Gemini API returned no candidates")
 
         for part in response.candidates[0].content.parts:
-            if hasattr(part, "inline_data"):
+            if hasattr(part, "inline_data") and part.inline_data.data:
                 return part.inline_data.data
 
         raise RuntimeError("No image data found in Gemini response")
+
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
 
@@ -143,4 +140,3 @@ def insert_test_image():
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)), log_level="info")
-
