@@ -41,15 +41,13 @@ class UserAvatarRequest(BaseModel):
     country: str
     prompt: str
 
-# ✅ Gemini image generation using old working config
-from google import generativeai as genai
+from google.generativeai import GenerativeModel, configure
 from google.generativeai.types import GenerationConfig
 
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
-        genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-        model = genai.GenerativeModel("gemini-2.0-flash-preview-image-generation")
+        configure(api_key=os.getenv("GOOGLE_API_KEY"))
+        model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
         response = model.generate_content(
             prompt,
@@ -57,14 +55,13 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         )
 
         if not response.parts:
-            raise RuntimeError("Gemini API returned no content")
+            raise RuntimeError("Gemini API returned no parts")
 
         for part in response.parts:
             if hasattr(part, "inline_data"):
                 return part.inline_data.data
 
-        raise RuntimeError("No image data found in Gemini response")
-
+        raise RuntimeError("No image data found in response")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
 
