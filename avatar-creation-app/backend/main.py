@@ -51,9 +51,11 @@ class UserAvatarRequest(BaseModel):
 # ✅ Avatar generation logic
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(prompt)
-
+        model = genai.GenerativeModel("gemini-1.5-pro")
+        response = model.generate_content(prompt, generation_config={
+            "response_mime_type": "image/png"
+        })
+        print("Gemini response MIME:", response.prompt_feedback)
         if not response.parts:
             raise RuntimeError("Gemini API returned no content")
 
