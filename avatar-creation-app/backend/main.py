@@ -34,8 +34,8 @@ app.add_middleware(
     allow_origins=[
         "https://avatar-app-mu.vercel.app",
         "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
-        "http://localhost:3000"
-        "http://0.0.0.0.3000"  # ✅ Added for local,
+        "http://localhost:3000",
+        "http://0.0.0.0:3000"  
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -108,7 +108,7 @@ async def store_user_avatar(req: UserAvatarRequest):
         return {
             "message": "User and avatar details stored successfully!",
             "prompt": req.prompt,
-            "image_base64": base64.b64encode(img_bytes).decode("utf-8")
+            "image": base64.b64encode(img_bytes).decode("utf-8")
         }
 
     except HTTPException as e:
@@ -125,7 +125,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
             avatars.append({
                 "prompt": doc.get("prompt", ""),
                 "timestamp": doc.get("timestamp", ""),
-                "image_base64": base64.b64encode(doc["image_binary"]).decode("utf-8")  # ✅ FIXED KEY
+                "image": base64.b64encode(doc["image_binary"]).decode("utf-8")  # ✅ FIXED KEY
             })
         return {"avatars": avatars}
     except Exception as e:
