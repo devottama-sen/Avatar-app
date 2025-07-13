@@ -1,4 +1,3 @@
-from google.generativeai import GenerativeModel, configure 
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -41,19 +40,24 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 # Function to generate avatar bytes using Gemini API
+from google.generativeai import GenerativeModel, configure
+
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
-        # ✅ Just pass the prompt string
+        # ✅ Explicitly request IMAGE and TEXT
         response = model.generate_content(
             prompt,
             stream=False,
+            generation_config={"response_mime_type": "text/plain"},
+            safety_settings=None,
+            request_options={"response_modality": ["TEXT", "IMAGE"]}
         )
 
-        # ✅ Access inline image from parts
+        # ✅ Parse parts for image
         for part in response.parts:
             if hasattr(part, "inline_data") and part.inline_data.mime_type.startswith("image/"):
                 return part.inline_data.data
@@ -61,6 +65,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         raise RuntimeError("No image data found in Gemini response.")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
+
 
 # Routes
 @app.get("/")
