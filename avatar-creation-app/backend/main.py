@@ -1,3 +1,4 @@
+from google.generativeai import GenerativeModel, configure 
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -38,6 +39,7 @@ class UserAvatarRequest(BaseModel):
     user_id: str
     country: str
     prompt: str
+
 
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
