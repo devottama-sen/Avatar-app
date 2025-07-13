@@ -10,7 +10,6 @@ from pymongo import MongoClient
 from datetime import datetime
 import uvicorn
 
-import google.generativeai as genai
 
 
 # MongoDB setup
@@ -43,16 +42,18 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 # ✅ Gemini image generation using old working config
-from google.generativeai import types
+from google import generativeai as genai
+from google.generativeai.types import GenerationConfig
 
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
         model = genai.GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
         response = model.generate_content(
             prompt,
-            generation_config=types.GenerationConfig(response_mime_type="image/png")
+            generation_config=GenerationConfig(response_mime_type="image/png")
         )
 
         if not response.parts:
@@ -61,13 +62,12 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         for part in response.parts:
             if hasattr(part, "inline_data"):
                 return part.inline_data.data
-            elif hasattr(part, "data"):
-                return part.data
 
         raise RuntimeError("No image data found in Gemini response")
 
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
+
 
 # Routes
 @app.get("/")
