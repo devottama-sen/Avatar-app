@@ -41,26 +41,28 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 
+from google.generativeai import GenerativeModel, configure
+from google.generativeai.types import Content
+
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
-        from google.generativeai import GenerativeModel, configure
-
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
-        response = model.generate_content(prompt)
+        # Explicitly specify both TEXT and IMAGE modalities
+        response = model.generate_content(
+            Content(parts=[{"text": prompt}]),
+            stream=False,
+            generation_config={"response_mime_type": "image/png"},
+        )
 
-        # Expecting response with image inside `inline_data`
-        if not response or not response.parts:
-            raise RuntimeError("No response from Gemini")
-
+        # Loop through parts to find image
         for part in response.parts:
             if hasattr(part, "inline_data") and part.inline_data.mime_type.startswith("image/"):
                 return part.inline_data.data
 
-        raise RuntimeError("No image data found in Gemini response")
-
+        raise RuntimeError("No image data found in response")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
 
