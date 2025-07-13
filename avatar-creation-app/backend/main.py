@@ -44,9 +44,12 @@ from google.generativeai import GenerativeModel, configure
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
-        response = model.generate_content(prompt)
+
+        response = model.generate_content(
+            contents=prompt,
+            response_modalities=["TEXT", "IMAGE"]  # ✅ Required
+        )
 
         if not response.candidates:
             raise RuntimeError("Gemini API returned no candidates")
@@ -59,6 +62,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
 
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
+
 
 # Routes
 @app.get("/")
