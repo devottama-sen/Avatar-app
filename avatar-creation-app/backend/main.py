@@ -1,30 +1,37 @@
-from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 import base64
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from google import genai
-from google.genai import types
+from pymongo import MongoClient
 from datetime import datetime
 import uvicorn
-import os
 
-MONGO_URI = os.getenv("MONGO_URI")
-SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.getenv("DEBUG", "False") == "True"
+# ✅ Gemini setup (works with image generation)
+from google import genai
+from google.genai import types
 
-# MongoDB Setup
-client = MongoClient("mongodb+srv://devottama_30:Pisuke3012sen@cluster0.fb2hmak.mongodb.net/avatarDB?retryWrites=true&w=majority&appName=Cluster0")
+# MongoDB setup
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(MONGO_URI)
 db = client["avatarDB"]
 users_collection = db["users"]
 
 # FastAPI app
 app = FastAPI()
 
-# CORS Configuration
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://avatar-app-mu.vercel.app",
+        "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
+        "http://localhost:3000",
+        "http://0.0.0.0:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -36,9 +43,9 @@ class UserAvatarRequest(BaseModel):
     country: str
     prompt: str
 
-# Gemini Image Generator
+# ✅ Gemini image generation using old working config
 def generate_avatar_bytes(prompt: str) -> bytes:
-    API_KEY = "AIzaSyA03nJSHyZhTCB-ueMKgSQjiHkRNggT1Fc"
+    API_KEY = os.getenv("GOOGLE_API_KEY")
     client = genai.Client(api_key=API_KEY)
     try:
         response = client.models.generate_content(
@@ -58,21 +65,29 @@ def generate_avatar_bytes(prompt: str) -> bytes:
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
 
+# Routes
+@app.get("/")
+def read_root():
+    return {"message": "Avatar API is running"}
+
+@app.get("/avatar-count")
+async def get_avatar_count(user_id: str = Query(..., alias="userId")):
+    try:
+        count = users_collection.count_documents({"user_id": user_id})
+        return {"count": count, "remaining": max(0, 10 - count)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/store-user-avatar")
 async def store_user_avatar(req: UserAvatarRequest):
     try:
         existing_count = users_collection.count_documents({"user_id": req.user_id})
         if existing_count >= 10:
-            raise HTTPException(
-                status_code=403,
-                detail="Avatar generation limit (10) reached for this user."
-            )
+            raise HTTPException(status_code=403, detail="Avatar generation limit (10) reached.")
 
         img_bytes = generate_avatar_bytes(req.prompt)
-        print("DEBUG: Length of image bytes:", len(img_bytes))
         if not img_bytes:
-          raise HTTPException(status_code=500, detail="No image data returned from Gemini.")
-
+            raise HTTPException(status_code=500, detail="No image data returned from Gemini.")
 
         user_doc = {
             "user_id": req.user_id,
@@ -87,7 +102,7 @@ async def store_user_avatar(req: UserAvatarRequest):
         return {
             "message": "User and avatar details stored successfully!",
             "prompt": req.prompt,
-            "image_base64": base64.b64encode(img_bytes).decode("utf-8")
+            "image": base64.b64encode(img_bytes).decode("utf-8")
         }
 
     except HTTPException as e:
@@ -96,42 +111,19 @@ async def store_user_avatar(req: UserAvatarRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/avatars")
-async def get_avatars(user_id: str | None = Query(default=None, alias="userId")):
+async def get_avatars(user_id: str = Query(..., alias="userId")):
     try:
-        query_filter = {"user_id": user_id} if user_id else {}
-        docs = users_collection.find(query_filter)
-        result = []
-
-        for doc in docs:
-            user_id = doc.get("user_id", "")
-            prompt = doc.get("prompt", "")
-            country = doc.get("country", "")
-            timestamp = doc.get("timestamp")
-            raw_bytes = doc.get("image_binary", b"")
-
-            try:
-                image_base64 = base64.b64encode(raw_bytes).decode("utf-8")
-            except Exception:
-                image_base64 = ""
-
-            result.append({
-                "user_id": user_id,
-                "prompt": prompt,
-                "country": country,
-                "timestamp": timestamp,
-                "image_base64": image_base64
+        cursor = users_collection.find({"user_id": user_id}).sort("timestamp", -1)
+        avatars = []
+        for doc in cursor:
+            avatars.append({
+                "user_id": doc.get("user_id", ""),
+                "country": doc.get("country", ""),
+                "prompt": doc.get("prompt", ""),
+                "timestamp": doc.get("timestamp", ""),
+                "image": base64.b64encode(doc["image_binary"]).decode("utf-8")
             })
-
-        return result
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve avatars: {str(e)}")
-
-@app.get("/avatar-count")
-async def get_avatar_count(user_id: str = Query(..., alias="userId")):
-    try:
-        count = users_collection.count_documents({"user_id": user_id})
-        return {"count": count, "remaining": max(0, 10 - count)}
+        return {"avatars": avatars}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -140,22 +132,17 @@ def insert_test_image():
     try:
         with open("test.png", "rb") as f:
             img = f.read()
-        doc = {
+        users_collection.insert_one({
             "user_id": "test_user",
             "country": "Nowhere",
             "prompt": "Test insert",
             "image_binary": img,
             "timestamp": datetime.utcnow()
-        }
-        users_collection.insert_one(doc)
+        })
         return {"message": "Test image inserted"}
     except Exception as e:
         return {"error": str(e)}
 
-@app.get("/")
-def read_root():
-    return {"message": "Avatar API is running"}
-
 if __name__ == "__main__":
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)), log_level="info")
 
