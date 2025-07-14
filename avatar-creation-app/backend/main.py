@@ -46,10 +46,10 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
-        # ✅ Just call with prompt — no config or modalities
-        response = model.generate_content(prompt)
+        # Ensure the prompt requests an image
+        image_prompt = f"Generate an avatar image: {prompt}"
 
-        # ✅ Correct way to extract image
+        response = model.generate_content(image_prompt)
         for part in response.parts:
             if hasattr(part, "inline_data"):
                 return part.inline_data.data
@@ -57,7 +57,6 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         raise RuntimeError("No image data found in Gemini response")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
-
 # Routes
 @app.get("/")
 def read_root():
