@@ -40,16 +40,18 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 from google.generativeai import GenerativeModel, configure
-
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
-        # Ensure the prompt requests an image
+        # Request both IMAGE and TEXT in the response
         image_prompt = f"Generate an avatar image: {prompt}"
 
-        response = model.generate_content(image_prompt)
+        response = model.generate_content(
+            image_prompt,
+            response_mime_type=["image/png", "text/plain"]  # <-- Add this line if supported
+        )
         for part in response.parts:
             if hasattr(part, "inline_data"):
                 return part.inline_data.data
