@@ -49,7 +49,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
         # ✅ Explicitly request IMAGE and TEXT
-        response = model.generate_content(
+        response = model.generateContent(
             prompt,
             stream=False,
             generation_config={"response_mime_type": "text/plain"},
