@@ -44,27 +44,19 @@ from google.generativeai import GenerativeModel, configure
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
-        # ✅ Explicitly request IMAGE and TEXT
-        response = model.generate_content(
-            prompt,
-            stream=False,
-            generation_config={"response_mime_type": "text/plain"},
-            safety_settings=None,
-            request_options={"response_modality": ["TEXT", "IMAGE"]}
-        )
+        # ✅ Just call with prompt — no config or modalities
+        response = model.generate_content(prompt)
 
-        # ✅ Parse parts for image
+        # ✅ Correct way to extract image
         for part in response.parts:
-            if hasattr(part, "inline_data") and part.inline_data.mime_type.startswith("image/"):
+            if hasattr(part, "inline_data"):
                 return part.inline_data.data
 
-        raise RuntimeError("No image data found in Gemini response.")
+        raise RuntimeError("No image data found in Gemini response")
     except Exception as e:
         raise RuntimeError(f"Gemini API Error: {str(e)}")
-
 
 # Routes
 @app.get("/")
