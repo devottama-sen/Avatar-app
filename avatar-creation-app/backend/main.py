@@ -39,7 +39,6 @@ class UserAvatarRequest(BaseModel):
     country: str
     prompt: str
 
-# Function to generate avatar bytes using Gemini API
 from google.generativeai import GenerativeModel, configure
 
 def generate_avatar_bytes(prompt: str) -> bytes:
@@ -49,7 +48,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
         # ✅ Explicitly request IMAGE and TEXT
-        response = model.generateContent(
+        response = model.generate_content(
             prompt,
             stream=False,
             generation_config={"response_mime_type": "text/plain"},
