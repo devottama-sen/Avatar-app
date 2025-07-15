@@ -10,6 +10,11 @@ from pymongo import MongoClient
 from datetime import datetime
 import uvicorn
 
+from google import genai
+from google.genai import types
+from PIL import Image
+from io import BytesIO
+
 # MongoDB setup
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 client = MongoClient(MONGO_URI)
@@ -39,34 +44,34 @@ class UserAvatarRequest(BaseModel):
     country: str
     prompt: str
 
-from google.generativeai import GenerativeModel, configure
+
+# Configure once globally (you can move this to startup if needed)
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+client = genai.Client()
 
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
-        configure(api_key=os.getenv("GOOGLE_API_KEY"))
-        model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
+        image_prompt = (
+            f"Generate a high-quality 3D-style avatar: {prompt}. "
+            f"The avatar should be well-lit, have a clean background, "
+            f"and resemble a professional profile picture."
+        )
 
-        # Create a more specific prompt for avatar generation
-        image_prompt = f"Generate a high-quality avatar image: {prompt}. Make it suitable for a profile picture, clean background, professional style."
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-preview-image-generation",
+            contents=image_prompt,
+            config=types.GenerateContentConfig(
+                response_modalities=["TEXT", "IMAGE"]
+            )
+        )
 
-        # Generate content without response_mime_type parameter
-        response = model.generate_content(image_prompt)
-        
-        # Extract image data from response
-        for part in response.parts:
-            if hasattr(part, "inline_data") and part.inline_data:
-                image_data = part.inline_data.data
-                
-                # Basic validation - check if image data is reasonable size
-                if len(image_data) < 1000:
-                    raise RuntimeError("Generated image appears to be invalid or too small")
-                    
-                return image_data
+        for part in response.candidates[0].content.parts:
+            if part.inline_data:
+                return part.inline_data.data
 
-        raise RuntimeError("No image data found in Gemini response")
-        
+        raise RuntimeError("No image data found in Gemini response.")
+
     except Exception as e:
-        # Handle quota/limit errors specifically
         if "quota" in str(e).lower() or "limit" in str(e).lower():
             raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
         raise RuntimeError(f"Gemini API Error: {str(e)}")
