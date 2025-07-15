@@ -40,25 +40,37 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 from google.generativeai import GenerativeModel, configure
+
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         configure(api_key=os.getenv("GOOGLE_API_KEY"))
         model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
-        # Request both IMAGE and TEXT in the response
-        image_prompt = f"Generate an avatar image: {prompt}"
+        # Create a more specific prompt for avatar generation
+        image_prompt = f"Generate a high-quality avatar image: {prompt}. Make it suitable for a profile picture, clean background, professional style."
 
-        response = model.generate_content(
-            image_prompt,
-            response_mime_type=["image/png", "text/plain"]  # <-- Add this line if supported
-        )
+        # Generate content without response_mime_type parameter
+        response = model.generate_content(image_prompt)
+        
+        # Extract image data from response
         for part in response.parts:
-            if hasattr(part, "inline_data"):
-                return part.inline_data.data
+            if hasattr(part, "inline_data") and part.inline_data:
+                image_data = part.inline_data.data
+                
+                # Basic validation - check if image data is reasonable size
+                if len(image_data) < 1000:
+                    raise RuntimeError("Generated image appears to be invalid or too small")
+                    
+                return image_data
 
         raise RuntimeError("No image data found in Gemini response")
+        
     except Exception as e:
+        # Handle quota/limit errors specifically
+        if "quota" in str(e).lower() or "limit" in str(e).lower():
+            raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
         raise RuntimeError(f"Gemini API Error: {str(e)}")
+
 # Routes
 @app.get("/")
 def read_root():
@@ -75,14 +87,17 @@ async def get_avatar_count(user_id: str = Query(..., alias="userId")):
 @app.post("/store-user-avatar")
 async def store_user_avatar(req: UserAvatarRequest):
     try:
+        # Check existing count
         existing_count = users_collection.count_documents({"user_id": req.user_id})
         if existing_count >= 10:
             raise HTTPException(status_code=403, detail="Avatar generation limit (10) reached.")
 
+        # Generate avatar image
         img_bytes = generate_avatar_bytes(req.prompt)
         if not img_bytes:
             raise HTTPException(status_code=500, detail="No image data returned from Gemini.")
 
+        # Create user document
         user_doc = {
             "user_id": req.user_id,
             "country": req.country,
@@ -91,6 +106,7 @@ async def store_user_avatar(req: UserAvatarRequest):
             "timestamp": datetime.utcnow()
         }
 
+        # Insert into database
         users_collection.insert_one(user_doc)
 
         return {
@@ -109,6 +125,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
     try:
         cursor = users_collection.find({"user_id": user_id}).sort("timestamp", -1)
         avatars = []
+        
         for doc in cursor:
             avatars.append({
                 "user_id": doc.get("user_id", ""),
@@ -117,6 +134,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
                 "timestamp": doc.get("timestamp", ""),
                 "image": base64.b64encode(doc["image_binary"]).decode("utf-8")
             })
+            
         return {"avatars": avatars}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -134,6 +152,8 @@ def insert_test_image():
             "timestamp": datetime.utcnow()
         })
         return {"message": "Test image inserted"}
+    except FileNotFoundError:
+        return {"error": "test.png file not found"}
     except Exception as e:
         return {"error": str(e)}
 
