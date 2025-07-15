@@ -10,7 +10,7 @@ from pymongo import MongoClient
 from datetime import datetime
 import uvicorn
 
-from google.generativeai import configure, Client
+from google.generativeai import configure, GenerativeModel
 from google.generativeai.types import GenerateContentConfig
 from PIL import Image
 from io import BytesIO
@@ -47,8 +47,7 @@ class UserAvatarRequest(BaseModel):
 
 # Configure once globally (you can move this to startup if needed)
 configure(api_key=os.getenv("GOOGLE_API_KEY"))
-client = Client()
-
+model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
@@ -58,11 +57,11 @@ def generate_avatar_bytes(prompt: str) -> bytes:
             f"and resemble a professional profile picture."
         )
 
-        response = client.models.generate_content(
-            model="gemini-2.0-flash-preview-image-generation",
+        response = model.generate_content(
             contents=image_prompt,
-            config = GenerateContentConfig(response_modalities=["TEXT", "IMAGE"])
-
+            generation_config=GenerateContentConfig(
+                response_modalities=["TEXT", "IMAGE"]
+            )
         )
 
         for part in response.candidates[0].content.parts:
