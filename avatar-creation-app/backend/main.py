@@ -47,8 +47,7 @@ class UserAvatarRequest(BaseModel):
     user_id: str
     country: str
     prompt: str
-
-# Avatar generation logic
+    
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         image_prompt = (
@@ -57,8 +56,12 @@ def generate_avatar_bytes(prompt: str) -> bytes:
             f"and resemble a professional profile picture."
         )
 
-        response = model.generate_content(image_prompt)
+        response = model.generate_content(
+            image_prompt,
+            generation_config=None,  # Optional
+        )
 
+        # Only IMAGE is returned — grab the inline image data
         for part in response.candidates[0].content.parts:
             if hasattr(part, "inline_data") and part.inline_data:
                 return part.inline_data.data
@@ -68,7 +71,8 @@ def generate_avatar_bytes(prompt: str) -> bytes:
     except Exception as e:
         if "quota" in str(e).lower() or "limit" in str(e).lower():
             raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
-        raise RuntimeError(f"Gemini API Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Gemini API Error: {str(e)}")
+
 
 # Routes
 @app.get("/")
