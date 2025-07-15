@@ -1,19 +1,19 @@
 import os
-from dotenv import load_dotenv
-load_dotenv()
-
 import base64
+from datetime import datetime
+from io import BytesIO
+
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pymongo import MongoClient
-from datetime import datetime
 import uvicorn
 
 from google.generativeai import configure, GenerativeModel
-from google.generativeai.types import GenerateContentConfig
-from PIL import Image
-from io import BytesIO
+
+# Load environment variables
+load_dotenv()
 
 # MongoDB setup
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
@@ -21,10 +21,14 @@ client = MongoClient(MONGO_URI)
 db = client["avatarDB"]
 users_collection = db["users"]
 
+# Gemini setup
+configure(api_key=os.getenv("GOOGLE_API_KEY"))
+model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
+
 # FastAPI app
 app = FastAPI()
 
-# CORS
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -38,17 +42,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Pydantic model
+# Pydantic model for request body
 class UserAvatarRequest(BaseModel):
     user_id: str
     country: str
     prompt: str
 
-
-# Configure once globally (you can move this to startup if needed)
-configure(api_key=os.getenv("GOOGLE_API_KEY"))
-model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
-
+# Avatar generation logic
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         image_prompt = (
@@ -57,15 +57,10 @@ def generate_avatar_bytes(prompt: str) -> bytes:
             f"and resemble a professional profile picture."
         )
 
-        response = model.generate_content(
-            contents=image_prompt,
-            generation_config=GenerateContentConfig(
-                response_modalities=["TEXT", "IMAGE"]
-            )
-        )
+        response = model.generate_content(image_prompt)
 
         for part in response.candidates[0].content.parts:
-            if part.inline_data:
+            if hasattr(part, "inline_data") and part.inline_data:
                 return part.inline_data.data
 
         raise RuntimeError("No image data found in Gemini response.")
@@ -91,17 +86,14 @@ async def get_avatar_count(user_id: str = Query(..., alias="userId")):
 @app.post("/store-user-avatar")
 async def store_user_avatar(req: UserAvatarRequest):
     try:
-        # Check existing count
         existing_count = users_collection.count_documents({"user_id": req.user_id})
         if existing_count >= 10:
             raise HTTPException(status_code=403, detail="Avatar generation limit (10) reached.")
 
-        # Generate avatar image
         img_bytes = generate_avatar_bytes(req.prompt)
         if not img_bytes:
             raise HTTPException(status_code=500, detail="No image data returned from Gemini.")
 
-        # Create user document
         user_doc = {
             "user_id": req.user_id,
             "country": req.country,
@@ -110,7 +102,6 @@ async def store_user_avatar(req: UserAvatarRequest):
             "timestamp": datetime.utcnow()
         }
 
-        # Insert into database
         users_collection.insert_one(user_doc)
 
         return {
@@ -129,7 +120,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
     try:
         cursor = users_collection.find({"user_id": user_id}).sort("timestamp", -1)
         avatars = []
-        
+
         for doc in cursor:
             avatars.append({
                 "user_id": doc.get("user_id", ""),
@@ -138,7 +129,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
                 "timestamp": doc.get("timestamp", ""),
                 "image": base64.b64encode(doc["image_binary"]).decode("utf-8")
             })
-            
+
         return {"avatars": avatars}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
