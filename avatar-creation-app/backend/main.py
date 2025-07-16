@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from pymongo import MongoClient
 import uvicorn
 
-from google.generativeai import configure, Client
+from google.generativeai import configure, GenerativeModel
 from google.generativeai.types import GenerateContentConfig
 
 # Load environment variables
@@ -24,7 +24,7 @@ users_collection = db["users"]
 
 # Gemini setup
 configure(api_key=os.getenv("GOOGLE_API_KEY"))
-gemini = Client()
+model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
 
 # FastAPI app
 app = FastAPI()
@@ -59,10 +59,12 @@ def generate_avatar_bytes(prompt: str) -> bytes:
             f"and resemble a professional profile picture."
         )
 
-        response = gemini.models.generate_content(
-            model="gemini-2.0-flash-preview-image-generation",
-            contents=image_prompt,
-            config=GenerateContentConfig(response_modalities=["TEXT", "IMAGE"])
+        response = model.generate_content(
+            image_prompt,
+            generation_config=GenerateContentConfig(
+                response_mime_type="image/png",  # Optional but helpful
+                response_modalities=["TEXT", "IMAGE"]
+            )
         )
 
         for part in response.candidates[0].content.parts:
@@ -75,6 +77,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         if "quota" in str(e).lower() or "limit" in str(e).lower():
             raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
         raise HTTPException(status_code=500, detail=f"Gemini API Error: {str(e)}")
+
 
 # API routes
 @app.get("/")
