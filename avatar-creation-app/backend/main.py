@@ -58,14 +58,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
             f"and resemble a professional profile picture."
         )
 
-        response = model.generate_content(
-    image_prompt,
-    generation_config={
-        "response_modalities": ["TEXT", "IMAGE"]
-    }
-)
-
-
+        response = model.generate_content(image_prompt)
 
         for part in response.candidates[0].content.parts:
             if hasattr(part, "inline_data") and part.inline_data:
@@ -77,6 +70,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         if "quota" in str(e).lower() or "limit" in str(e).lower():
             raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
         raise HTTPException(status_code=500, detail=f"Gemini API Error: {str(e)}")
+
 
 
 # API routes
