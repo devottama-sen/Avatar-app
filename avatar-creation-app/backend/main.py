@@ -11,7 +11,6 @@ from pymongo import MongoClient
 import uvicorn
 
 from google.generativeai import configure, GenerativeModel
-from google.generativeai.types import GenerateContentConfig
 
 # Load environment variables
 load_dotenv()
