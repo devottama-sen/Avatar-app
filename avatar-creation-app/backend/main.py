@@ -46,8 +46,11 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 # Helper function to make HTTP requests
-async def fetch(url: str, method: str, headers: dict, body: str = None): # body is now optional
-    async with httpx.AsyncClient() as client:
+async def fetch(url: str, method: str, headers: dict, body: str = None, timeout: int = 30, verify_ssl: bool = True):
+    """
+    Makes an HTTP request with configurable timeout and SSL verification.
+    """
+    async with httpx.AsyncClient(verify=verify_ssl, timeout=timeout) as client:
         try:
             if method == 'POST':
                 res = await client.post(url, headers=headers, content=body)
@@ -57,11 +60,11 @@ async def fetch(url: str, method: str, headers: dict, body: str = None): # body 
             return res.text # Return the response text
         except httpx.HTTPStatusError as e:
             # Log the full error response from the API
-            print(f"HTTP Error during fetch: {e.response.status_code} - {e.response.text}")
-            raise HTTPException(status_code=e.response.status_code, detail=f"External API error: {e.response.text}")
+            print(f"HTTP Error during fetch to {url}: {e.response.status_code} - {e.response.text}")
+            raise HTTPException(status_code=e.response.status_code, detail=f"External API HTTP error: {e.response.text}")
         except httpx.RequestError as e:
             # Log network-related errors
-            print(f"Network Error during fetch: {e}")
+            print(f"Network Error during fetch to {url}: {e}")
             raise HTTPException(status_code=503, detail=f"Network error connecting to external API: {e}")
 
 
@@ -93,12 +96,13 @@ async def generate_avatar_bytes(prompt: str) -> bytes:
         print(f"Making Imagen API call to: {api_url}")
         print(f"Payload: {json.dumps(payload)}")
 
-        # Make the API call
+        # Make the API call with increased timeout
         response_text = await fetch(
             api_url,
             method='POST',
             headers={'Content-Type': 'application/json'},
-            body=json.dumps(payload)
+            body=json.dumps(payload),
+            timeout=60 # Increased timeout for image generation
         )
         
         # Parse the JSON response
@@ -269,6 +273,46 @@ async def diagnose_google_api():
     except Exception as e:
         print(f"Google API diagnostic failed (Unexpected error): {str(e)}")
         return {"status": "error", "message": f"Failed to connect to Google Public DNS API (Unexpected error): {str(e)}"}
+
+@app.get("/diagnose-imagen-direct")
+async def diagnose_imagen_direct(verify_ssl: bool = Query(True, description="Set to false to disable SSL verification (for diagnostic only)")):
+    """
+    Attempts to make a direct call to the Imagen API endpoint to diagnose issues.
+    Allows disabling SSL verification for testing.
+    """
+    api_key = os.getenv("GOOGLE_API_KEY", "")
+    if not api_key:
+        return {"status": "error", "message": "GOOGLE_API_KEY environment variable is not set."}
+
+    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key={api_key}"
+    payload = {
+        "instances": {"prompt": "a small red car"}, # Use a simple prompt for testing
+        "parameters": {"sampleCount": 1}
+    }
+
+    print(f"Attempting direct Imagen API call to: {api_url} with verify_ssl={verify_ssl}")
+    try:
+        response_text = await fetch(
+            api_url,
+            method='POST',
+            headers={'Content-Type': 'application/json'},
+            body=json.dumps(payload),
+            timeout=60, # Increased timeout
+            verify_ssl=verify_ssl
+        )
+        result = json.loads(response_text)
+        if result.get("predictions") and len(result["predictions"]) > 0 and result["predictions"][0].get("bytesBase64Encoded"):
+            print("Successfully received image data from Imagen API.")
+            return {"status": "success", "message": "Successfully connected to Imagen API and received image data."}
+        else:
+            print(f"Imagen API direct call: No image data or unexpected response structure: {response_text[:500]}")
+            return {"status": "error", "message": "Connected to Imagen API but no image data or unexpected response structure.", "response_snippet": response_text[:500]}
+    except HTTPException as e:
+        print(f"Imagen API direct call failed (HTTPException): {e.detail}")
+        return {"status": "error", "message": f"Imagen API direct call failed: {e.detail}"}
+    except Exception as e:
+        print(f"Imagen API direct call failed (Unexpected error): {str(e)}")
+        return {"status": "error", "message": f"Imagen API direct call failed (Unexpected error): {str(e)}"}
 
 
 if __name__ == "__main__":
