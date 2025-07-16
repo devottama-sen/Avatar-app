@@ -32,6 +32,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://avatar-app.vercel.app",  # ✅ NEW deployed domain
         "https://avatar-app-mu.vercel.app",
         "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
         "http://localhost:3000",
@@ -47,7 +48,7 @@ class UserAvatarRequest(BaseModel):
     user_id: str
     country: str
     prompt: str
-    
+
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         image_prompt = (
