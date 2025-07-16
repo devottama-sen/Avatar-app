@@ -2,7 +2,8 @@ import os
 import base64
 from datetime import datetime
 from io import BytesIO
-import json # Import json for parsing the API response
+import json
+import httpx # Ensure httpx is imported for the fetch function
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
@@ -10,9 +11,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pymongo import MongoClient
 import uvicorn
-
-# No direct import for google.generativeai.GenerativeModel for imagen-3.0-generate-002
-# We will use direct fetch for imagen-3.0-generate-002 as per instructions.
 
 # Load environment variables
 load_dotenv()
@@ -47,6 +45,26 @@ class UserAvatarRequest(BaseModel):
     country: str
     prompt: str
 
+# Helper function to make HTTP requests
+async def fetch(url: str, method: str, headers: dict, body: str):
+    async with httpx.AsyncClient() as client:
+        try:
+            if method == 'POST':
+                res = await client.post(url, headers=headers, content=body)
+            else:
+                res = await client.get(url, headers=headers)
+            res.raise_for_status() # Raise an exception for HTTP errors (4xx or 5xx)
+            return res.text # Return the response text
+        except httpx.HTTPStatusError as e:
+            # Log the full error response from the API
+            print(f"HTTP Error during fetch: {e.response.status_code} - {e.response.text}")
+            raise HTTPException(status_code=e.response.status_code, detail=f"External API error: {e.response.text}")
+        except httpx.RequestError as e:
+            # Log network-related errors
+            print(f"Network Error during fetch: {e}")
+            raise HTTPException(status_code=503, detail=f"Network error connecting to external API: {e}")
+
+
 # Avatar generation using imagen-3.0-generate-002
 async def generate_avatar_bytes(prompt: str) -> bytes:
     try:
@@ -58,57 +76,56 @@ async def generate_avatar_bytes(prompt: str) -> bytes:
         )
 
         # Prepare the payload for the imagen-3.0-generate-002 API call
-        # As per instructions, use 'instances' for the prompt and 'parameters' for sampleCount
         payload = {
             "instances": {"prompt": image_prompt_text},
             "parameters": {"sampleCount": 1}
         }
 
         # Get API key from environment variables
-        api_key = os.getenv("GOOGLE_API_KEY", "") # Ensure API key is loaded
+        api_key = os.getenv("GOOGLE_API_KEY", "")
+        if not api_key:
+            print("Warning: GOOGLE_API_KEY environment variable is not set.")
+            raise HTTPException(status_code=500, detail="Server configuration error: Google API Key is missing.")
 
         # Construct the API URL for imagen-3.0-generate-002
         api_url = f"https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key={api_key}"
 
+        print(f"Making Imagen API call to: {api_url}")
+        print(f"Payload: {json.dumps(payload)}")
+
         # Make the API call
-        response = await fetch(
+        response_text = await fetch(
             api_url,
             method='POST',
             headers={'Content-Type': 'application/json'},
-            body=json.dumps(payload) # Convert payload to JSON string
+            body=json.dumps(payload)
         )
         
         # Parse the JSON response
-        result = json.loads(response)
+        result = json.loads(response_text)
+        print(f"Imagen API Raw Response: {response_text}")
 
         # Extract the base64 encoded image data
         if result.get("predictions") and len(result["predictions"]) > 0 and result["predictions"][0].get("bytesBase64Encoded"):
             # The image data is base64 encoded, decode it to bytes
             return base64.b64decode(result["predictions"][0]["bytesBase64Encoded"])
         else:
-            raise RuntimeError("No image data found in Imagen API response.")
+            # If no image data is found but no HTTP error occurred, it's an unexpected response structure
+            print(f"Imagen API response did not contain expected image data: {result}")
+            raise RuntimeError("No image data found in Imagen API response or unexpected response structure.")
 
+    except HTTPException as e:
+        # Re-raise HTTPException directly as it's already a controlled error
+        raise e
     except Exception as e:
+        # Catch any other unexpected errors and log them
+        print(f"An unexpected error occurred in generate_avatar_bytes: {str(e)}")
         # Check for specific error messages related to quota or limits
         error_message = str(e).lower()
         if "quota" in error_message or "limit" in error_message or "resource exhausted" in error_message:
             raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
-        raise HTTPException(status_code=500, detail=f"Imagen API Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal Server Error during avatar generation: {str(e)}")
 
-# Helper function to simulate fetch in Python (for demonstration/testing purposes)
-# In a real FastAPI app, you'd use a library like `httpx` or `requests` for external API calls.
-# For the purpose of this response, I'm providing a placeholder for `fetch`.
-# You would replace this with actual HTTP client code.
-async def fetch(url: str, method: str, headers: dict, body: str):
-    import httpx # Using httpx for async HTTP requests
-
-    async with httpx.AsyncClient() as client:
-        if method == 'POST':
-            res = await client.post(url, headers=headers, content=body)
-        else:
-            res = await client.get(url, headers=headers)
-        res.raise_for_status() # Raise an exception for HTTP errors
-        return res.text # Return the response text
 
 # API routes
 @app.get("/")
@@ -121,6 +138,7 @@ async def get_avatar_count(user_id: str = Query(..., alias="userId")):
         count = users_collection.count_documents({"user_id": user_id})
         return {"count": count, "remaining": max(0, 10 - count)}
     except Exception as e:
+        print(f"Error getting avatar count: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/store-user-avatar")
@@ -150,9 +168,11 @@ async def store_user_avatar(req: UserAvatarRequest):
         }
 
     except HTTPException as e:
+        # Re-raise HTTPExceptions directly
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"An unexpected error occurred in store_user_avatar: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to store user avatar: {str(e)}")
 
 @app.get("/avatars")
 async def get_avatars(user_id: str = Query(..., alias="userId")):
@@ -167,6 +187,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
                 encoded_image = base64.b64encode(image_data).decode("utf-8")
             else:
                 # Handle cases where image_binary might be missing or not bytes
+                print(f"Warning: image_binary missing or not bytes for user_id: {user_id}, doc_id: {doc.get('_id')}")
                 encoded_image = "" # Or a placeholder base64 string
 
             avatars.append({
@@ -179,13 +200,12 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
 
         return {"avatars": avatars}
     except Exception as e:
+        print(f"Error retrieving avatars for user_id {user_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/test-insert")
 def insert_test_image():
     try:
-        # This endpoint is for testing local file insertion, not related to Gemini/Imagen API
-        # It assumes 'test.png' exists in the same directory as main.py
         with open("test.png", "rb") as f:
             img = f.read()
         users_collection.insert_one({
@@ -197,12 +217,12 @@ def insert_test_image():
         })
         return {"message": "Test image inserted"}
     except FileNotFoundError:
+        print("Error: test.png file not found for /test-insert endpoint.")
         return {"error": "test.png file not found. Please ensure 'test.png' exists for this endpoint to work."}
     except Exception as e:
+        print(f"An unexpected error occurred in test-insert: {str(e)}")
         return {"error": str(e)}
 
 if __name__ == "__main__":
-    # Ensure httpx is installed: pip install httpx
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)), log_level="info")
-
 
