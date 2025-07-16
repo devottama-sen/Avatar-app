@@ -46,7 +46,7 @@ class UserAvatarRequest(BaseModel):
     prompt: str
 
 # Helper function to make HTTP requests
-async def fetch(url: str, method: str, headers: dict, body: str):
+async def fetch(url: str, method: str, headers: dict, body: str = None): # body is now optional
     async with httpx.AsyncClient() as client:
         try:
             if method == 'POST':
@@ -203,7 +203,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
         print(f"Error retrieving avatars for user_id {user_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/test-insert")
+@app.get("/test-insert")
 def insert_test_image():
     try:
         with open("test.png", "rb") as f:
@@ -222,6 +222,30 @@ def insert_test_image():
     except Exception as e:
         print(f"An unexpected error occurred in test-insert: {str(e)}")
         return {"error": str(e)}
+
+@app.get("/diagnose-network")
+async def diagnose_network():
+    """
+    Attempts to connect to an external well-known URL to diagnose network connectivity issues.
+    """
+    test_url = "https://www.google.com"
+    try:
+        print(f"Attempting to reach {test_url} for network diagnosis...")
+        async with httpx.AsyncClient() as client:
+            response = await client.get(test_url, timeout=10) # Add a timeout
+            response.raise_for_status()
+        print(f"Successfully connected to {test_url}. Status: {response.status_code}")
+        return {"status": "success", "message": f"Successfully connected to {test_url}"}
+    except httpx.HTTPStatusError as e:
+        print(f"Network diagnostic failed (HTTP error): {e.response.status_code} - {e.response.text}")
+        return {"status": "error", "message": f"Failed to connect to {test_url} (HTTP error): {e.response.status_code} - {e.response.text}"}
+    except httpx.RequestError as e:
+        print(f"Network diagnostic failed (Request error): {e}")
+        return {"status": "error", "message": f"Failed to connect to {test_url} (Network error): {e}"}
+    except Exception as e:
+        print(f"Network diagnostic failed (Unexpected error): {str(e)}")
+        return {"status": "error", "message": f"Failed to connect to {test_url} (Unexpected error): {str(e)}"}
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)), log_level="info")
