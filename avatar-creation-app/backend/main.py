@@ -10,7 +10,8 @@ from pydantic import BaseModel
 from pymongo import MongoClient
 import uvicorn
 
-from google.generativeai import configure, GenerativeModel
+from google.generativeai import configure, Client
+from google.generativeai.types import GenerateContentConfig
 
 # Load environment variables
 load_dotenv()
@@ -23,7 +24,7 @@ users_collection = db["users"]
 
 # Gemini setup
 configure(api_key=os.getenv("GOOGLE_API_KEY"))
-model = GenerativeModel("gemini-2.0-flash-preview-image-generation")
+gemini = Client()
 
 # FastAPI app
 app = FastAPI()
@@ -32,7 +33,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://avatar-app.vercel.app",  # ✅ NEW deployed domain
+        "https://avatar-app.vercel.app",  # ✅ Production domain
         "https://avatar-app-mu.vercel.app",
         "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
         "http://localhost:3000",
@@ -43,12 +44,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Pydantic model for request body
+# Request model
 class UserAvatarRequest(BaseModel):
     user_id: str
     country: str
     prompt: str
 
+# Avatar generation
 def generate_avatar_bytes(prompt: str) -> bytes:
     try:
         image_prompt = (
@@ -57,12 +59,12 @@ def generate_avatar_bytes(prompt: str) -> bytes:
             f"and resemble a professional profile picture."
         )
 
-        response = model.generate_content(
-            image_prompt,
-            generation_config=None,  # Optional
+        response = gemini.models.generate_content(
+            model="gemini-2.0-flash-preview-image-generation",
+            contents=image_prompt,
+            config=GenerateContentConfig(response_modalities=["TEXT", "IMAGE"])
         )
 
-        # Only IMAGE is returned — grab the inline image data
         for part in response.candidates[0].content.parts:
             if hasattr(part, "inline_data") and part.inline_data:
                 return part.inline_data.data
@@ -74,8 +76,7 @@ def generate_avatar_bytes(prompt: str) -> bytes:
             raise HTTPException(status_code=429, detail="API quota exceeded. Please try again later.")
         raise HTTPException(status_code=500, detail=f"Gemini API Error: {str(e)}")
 
-
-# Routes
+# API routes
 @app.get("/")
 def read_root():
     return {"message": "Avatar API is running"}
@@ -91,8 +92,7 @@ async def get_avatar_count(user_id: str = Query(..., alias="userId")):
 @app.post("/store-user-avatar")
 async def store_user_avatar(req: UserAvatarRequest):
     try:
-        existing_count = users_collection.count_documents({"user_id": req.user_id})
-        if existing_count >= 10:
+        if users_collection.count_documents({"user_id": req.user_id}) >= 10:
             raise HTTPException(status_code=403, detail="Avatar generation limit (10) reached.")
 
         img_bytes = generate_avatar_bytes(req.prompt)
@@ -106,7 +106,6 @@ async def store_user_avatar(req: UserAvatarRequest):
             "image_binary": img_bytes,
             "timestamp": datetime.utcnow()
         }
-
         users_collection.insert_one(user_doc)
 
         return {
@@ -123,8 +122,8 @@ async def store_user_avatar(req: UserAvatarRequest):
 @app.get("/avatars")
 async def get_avatars(user_id: str = Query(..., alias="userId")):
     try:
-        cursor = users_collection.find({"user_id": user_id}).sort("timestamp", -1)
         avatars = []
+        cursor = users_collection.find({"user_id": user_id}).sort("timestamp", -1)
 
         for doc in cursor:
             avatars.append({
@@ -159,3 +158,4 @@ def insert_test_image():
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)), log_level="info")
+
