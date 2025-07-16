@@ -203,7 +203,7 @@ async def get_avatars(user_id: str = Query(..., alias="userId")):
         print(f"Error retrieving avatars for user_id {user_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/test-insert")
+@app.post("/test-insert")
 def insert_test_image():
     try:
         with open("test.png", "rb") as f:
@@ -245,6 +245,30 @@ async def diagnose_network():
     except Exception as e:
         print(f"Network diagnostic failed (Unexpected error): {str(e)}")
         return {"status": "error", "message": f"Failed to connect to {test_url} (Unexpected error): {str(e)}"}
+
+@app.get("/diagnose-google-api")
+async def diagnose_google_api():
+    """
+    Attempts to connect to a different Google API endpoint (Google Public DNS)
+    to diagnose connectivity issues specifically with Google's API infrastructure.
+    """
+    test_google_api_url = "https://dns.google/resolve?name=google.com"
+    try:
+        print(f"Attempting to reach Google Public DNS API at {test_google_api_url}...")
+        async with httpx.AsyncClient() as client:
+            response = await client.get(test_google_api_url, timeout=10)
+            response.raise_for_status()
+        print(f"Successfully connected to Google Public DNS API. Status: {response.status_code}")
+        return {"status": "success", "message": f"Successfully connected to {test_google_api_url}", "response_snippet": response.text[:200]}
+    except httpx.HTTPStatusError as e:
+        print(f"Google API diagnostic failed (HTTP error): {e.response.status_code} - {e.response.text}")
+        return {"status": "error", "message": f"Failed to connect to Google Public DNS API (HTTP error): {e.response.status_code} - {e.response.text}"}
+    except httpx.RequestError as e:
+        print(f"Google API diagnostic failed (Request error): {e}")
+        return {"status": "error", "message": f"Failed to connect to Google Public DNS API (Network error): {e}"}
+    except Exception as e:
+        print(f"Google API diagnostic failed (Unexpected error): {str(e)}")
+        return {"status": "error", "message": f"Failed to connect to Google Public DNS API (Unexpected error): {str(e)}"}
 
 
 if __name__ == "__main__":
