@@ -59,12 +59,13 @@ def generate_avatar_bytes(prompt: str) -> bytes:
         )
 
         response = model.generate_content(
-            image_prompt,
-            generation_config=GenerateContentConfig(
-                response_mime_type="image/png",  # Optional but helpful
-                response_modalities=["TEXT", "IMAGE"]
-            )
-        )
+    image_prompt,
+    generation_config={
+        "response_modalities": ["TEXT", "IMAGE"]
+    }
+)
+
+
 
         for part in response.candidates[0].content.parts:
             if hasattr(part, "inline_data") and part.inline_data:
