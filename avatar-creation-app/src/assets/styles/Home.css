@@ -49,17 +49,17 @@
 
 /* Optional: highlight the word "virtual" */
 .intro-text b {
-    color: #4aa1f3;
+    color: #a3d5ff; /* pastel blue */
     font-weight: 600;
 }
 
-/* Updated button to blue */
+/* Start button - pastel blue */
 .start-button {
     padding: 12px 30px;
     font-size: 1.1rem;
     border: none;
-    background-color: #1a3d8f;
-    color: white;
+    background-color: #a3d5ff; /* pastel blue */
+    color: #003366; /* dark blue text */
     border-radius: 8px;
     text-decoration: none;
     cursor: pointer;
@@ -67,8 +67,8 @@
 }
 
 .start-button:hover {
-    box-shadow: 0 6px 15px rgba(30, 144, 255, 0.3);
-    background-color: #245bd3;
+    box-shadow: 0 6px 15px rgba(163, 213, 255, 0.5);
+    background-color: #bee2ff; /* lighter pastel blue on hover */
     transform: scale(1.05);
 }
 
@@ -102,3 +102,4 @@
     background-color: #a53232;
     transform: scale(1.05);
 }
+
