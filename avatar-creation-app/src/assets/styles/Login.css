@@ -5,9 +5,6 @@ html, body {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   height: 100%;
-}
-
-body {
   background: url('../images/Office3.jpeg') no-repeat center center fixed;
   background-size: cover;
   color: white;
@@ -23,7 +20,8 @@ body {
   text-align: left;
   font-size: 16px;
   color: white;
-  position: relative;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .login-container h1 {
@@ -31,6 +29,7 @@ body {
   margin-bottom: 24px;
   font-size: 32px;
   color: white;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .login-form-group {
@@ -41,7 +40,7 @@ body {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #d3f0d3;
+  color: #d3f0d3; /* soft green */
 }
 
 .login-form-group input {
@@ -51,12 +50,16 @@ body {
   border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
+  background-color: #f3fdf3;
+  color: #222;
 }
 
 .login-form-group input:focus {
-  outline: none;
+  outline: 2px solid #aee0ae;
+  background-color: #ffffff;
 }
 
+/* Primary button */
 .login-button {
   margin: 10px 0;
   padding: 12px 24px;
@@ -72,11 +75,12 @@ body {
 }
 
 .login-button:hover {
-  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
   background-color: #247024;
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
   transform: scale(1.05);
 }
 
+/* Error or status message */
 .login-message {
   margin-top: 16px;
   text-align: center;
@@ -84,12 +88,13 @@ body {
   font-weight: 500;
 }
 
+/* Register button (secondary action) */
 .register-button {
   display: block;
   width: 100%;
   padding: 12px;
   background-color: #E3EED4;
-  color: BLACK;
+  color: #1f1f1f;
   font-size: 16px;
   border: none;
   border-radius: 8px;
@@ -100,20 +105,20 @@ body {
 }
 
 .register-button:hover {
-  background-color: #E3EED4;
+  background-color: #d4eace;
   transform: scale(1.05);
-  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.2);
 }
 
+/* Forgot password link */
 .forgot-password {
   text-align: center;
   margin-top: 12px;
-  font-size: 18px;
+  font-size: 16px;
   color: #aee0ae;
   cursor: pointer;
   transition: color 0.3s ease;
 }
-
 
 .forgot-password:hover {
   color: #c2f5c2;
