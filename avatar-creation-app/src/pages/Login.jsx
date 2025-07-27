@@ -31,37 +31,27 @@ const Login = () => {
     <div className="login-container">
       <h1>Login</h1>
 
-      <div className="login-form-group">
-        <label htmlFor="name">Name</label>
-        <input
-          id="name"
-          type="text"
-          placeholder="Enter your name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
+      <input
+        type="text"
+        placeholder="Enter Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
 
-      <div className="login-form-group">
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </div>
+      <input
+        type="password"
+        placeholder="Enter Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
       <p className="forgot-password" onClick={handleForgotPassword}>
         Forgot Password?
       </p>
 
-      <button className="login-button" onClick={handleLogin}>
-        Login
-      </button>
+      <button onClick={handleLogin}>Login</button>
 
-      <button className="register-button" onClick={goToRegister}>
+      <button onClick={goToRegister} className="register-button">
         Register
       </button>
     </div>

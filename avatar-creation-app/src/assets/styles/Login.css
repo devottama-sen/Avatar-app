@@ -1,4 +1,4 @@
-/* login.css - Pastel Blue Version */
+/* Login.css */
 
 html, body {
   margin: 0;
@@ -7,120 +7,110 @@ html, body {
   height: 100%;
   background: url('../images/Office3.jpeg') no-repeat center center fixed;
   background-size: cover;
-  color: white;
+  color: #ffffff;
 }
 
 .login-container {
   max-width: 400px;
   margin: 80px auto;
   padding: 40px;
-  background-color: rgba(0, 0, 0, 0.55);
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   text-align: left;
   font-size: 16px;
-  color: white;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .login-container h1 {
   text-align: center;
   margin-bottom: 24px;
   font-size: 32px;
-  color: #ffffff;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  color: #e0f0ff; /* pastel blue title */
 }
 
+/* Grouped styling for each input field */
 .login-form-group {
   margin-bottom: 20px;
 }
 
 .login-form-group label {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   font-weight: 600;
-  color: #b8e0fa; /* pastel blue */
+  color: #c6e5f8; /* pastel blue-gray */
 }
 
 .login-form-group input {
   width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
   box-sizing: border-box;
-  background-color: #f5faff;
-  color: #1e1e1e;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #333;
+  transition: box-shadow 0.3s ease;
 }
 
 .login-form-group input:focus {
-  outline: 2px solid #a3d5ff; /* pastel blue border on focus */
-  background-color: white;
+  outline: none;
+  box-shadow: 0 0 5px #a8d3f8;
 }
 
-/* Pastel Blue Login Button */
+/* Main Login button */
 .login-button {
   margin: 10px 0;
   padding: 12px 24px;
   font-size: 16px;
   border: none;
-  border-radius: 8px;
-  background-color: #a3d5ff; /* pastel blue */
-  color: #003366; /* dark text for contrast */
+  border-radius: 10px;
+  background-color: #a8d3f8; /* pastel blue */
+  color: #1a1a1a;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
   width: 100%;
-  box-sizing: border-box;
 }
 
 .login-button:hover {
-  background-color: #bee2ff; /* lighter pastel blue */
-  box-shadow: 0 6px 15px rgba(163, 213, 255, 0.4);
-  transform: scale(1.05);
+  background-color: #c2e0fa;
+  transform: scale(1.03);
+  box-shadow: 0 6px 15px rgba(168, 211, 248, 0.4);
 }
 
-/* Error or info message */
-.login-message {
-  margin-top: 16px;
-  text-align: center;
-  color: #ffd6d6;
-  font-weight: 500;
-}
-
-/* Register Button */
+/* Register button */
 .register-button {
+  margin-top: 12px;
   display: block;
   width: 100%;
   padding: 12px;
-  background-color: #d7ecff;
-  color: #002244;
+  background-color: #e3f2fd;
+  color: #000;
   font-size: 16px;
   border: none;
-  border-radius: 8px;
-  text-decoration: none;
+  border-radius: 10px;
   text-align: center;
-  margin-top: 12px;
+  cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .register-button:hover {
-  background-color: #e6f2ff;
-  transform: scale(1.05);
-  box-shadow: 0 6px 15px rgba(163, 213, 255, 0.2);
+  background-color: #cde7fb;
+  transform: scale(1.03);
+  box-shadow: 0 6px 15px rgba(180, 215, 255, 0.4);
 }
 
 /* Forgot Password */
 .forgot-password {
   text-align: center;
-  margin-top: 12px;
+  margin: 12px 0;
   font-size: 16px;
-  color: #cfeaff;
+  color: #d0ecff;
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
 .forgot-password:hover {
-  color: #e3f3ff;
+  color: #ffffff;
   text-decoration: underline;
 }
