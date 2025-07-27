@@ -1,39 +1,94 @@
+/* src/assets/styles/Navbar.css */
+
 .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 15px 0; /* Added vertical padding */
-    text-align: center;
-    z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.9);
   
-  .navbar ul {
-    list-style-type: none;
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .navbar a {
-    color: #333;
-    text-decoration: none;
-    margin: 0 15px;
-    font-size: 16px;
-    transition: color 0.3s ease, font-size 0.3s ease;
-    position: relative; 
-  }
-  
-  .navbar a:hover {
-    color: #295f2d;
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-  
+  /* --- FIX FOR CONSISTENT HEIGHT --- */
+  padding: 0 30px; /* Remove vertical padding from here */
+  height: 60px; /* Set a fixed height for the navbar */
+  /* You can adjust 60px to your desired consistent height */
+  /* --- END FIX --- */
+
+  /* text-align: center; <-- This is generally not needed when using flexbox for alignment */
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* This will vertically center content within the fixed height */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* This .navbar ul style won't apply directly with the left/center/right divs, but keeping it here for reference */
+.navbar ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 0;
+  padding: 0;
+}
+
+/* General link styling for all navbar links */
+.nav-link {
+  color: #333;
+  text-decoration: none;
+  margin: 0 15px;
+  font-size: 18px;
+  transition: color 0.3s ease, font-size 0.3s ease;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: #1c6fb3;
+  font-weight: bold;
+  font-size: 1.2rem; /* Ensure this hover effect doesn't break fixed height */
+}
+
+/* --- Required for Left-Center-Right Layout --- */
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand {
+  color: #333;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar-center {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+/* --- End Required for Left-Center-Right Layout --- */
+
+.nav-logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px; /* Adjust if needed to fit within the fixed height */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  width: auto;
+  white-space: nowrap;
+  margin-left: 20px;
+}
+
+.nav-logout-btn:hover {
+  background-color: #c82333;
+}

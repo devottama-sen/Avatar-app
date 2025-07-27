@@ -7,12 +7,10 @@ const Footer = () => {
     <footer className="main-footer">
       <p>
         &copy; {currentYear} I3D Lab, IISc, Bangalore. All rights reserved.
-      </p>
-      <p>
-        Created By: Devottama Sen
-      </p>
-      <p>
-        Mentored By: Prof. Pradipta Biswas
+        <span className="footer-line-separator"> | </span> {/* Separator line */}
+        <span className="footer-created-by">Created By: Devottama Sen</span>
+        <span className="footer-line-separator"> | </span> {/* Separator line */}
+        <span className="footer-mentored-by">Mentored By: Prof. Pradipta Biswas</span> {/* Using a new class for mentors */}
       </p>
     </footer>
   );

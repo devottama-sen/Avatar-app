@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import '../assets/styles/Login.css';
 
-const Login = () => {
+// Accept onLoginSuccess as a prop
+const Login = ({ onLoginSuccess }) => {
   const history = useHistory();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +13,14 @@ const Login = () => {
     const storedPassword = localStorage.getItem("user_password");
 
     if (name === storedName && password === storedPassword) {
-      localStorage.setItem("isLoggedIn", "true"); 
+      // *** REMOVE this line as it's redundant if user_id is the primary login indicator ***
+      // localStorage.setItem("isLoggedIn", "true"); 
+      
+      // Call onLoginSuccess and PASS THE USERNAME (which is 'name' in this component)
+      if (onLoginSuccess) {
+        onLoginSuccess(name); // <--- CHANGE IS HERE: Pass 'name' as the argument
+      }
+
       history.push('/avatar-details');
     } else {
       alert("Invalid name or password. Please register.");

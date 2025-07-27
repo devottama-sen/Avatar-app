@@ -1,4 +1,4 @@
-/* UserProfile.css */
+/* src/assets/styles/UserProfile.css */
 html, body {
   margin: 0;
   padding: 0;
@@ -9,15 +9,14 @@ html, body {
 body {
   background: url('../images/Office3.jpeg') no-repeat center center fixed;
   background-size: cover;
-  color: white; /* General text color for the body if not overridden */
 }
 
 .main-content {
-  padding-top: 80px;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-grow: 1;
+  padding: 20px 0;
 }
 
 .user-profile-wrapper {
@@ -29,32 +28,31 @@ body {
   max-width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   font-size: 16px;
-  color: white; /* General text color inside the wrapper */
+  color: #A3D5FF; /* General text color as previously requested (affects default text) */
+  box-sizing: border-box;
 }
 
 h1 {
-  color: #e0f0ff; /* Changed: Pastel blue for heading */
+  color: white; /* Changed to white for "User Details" */
   font-size: 32px;
   margin-bottom: 10px;
-  text-align: center; /* Keep heading centered */
+  text-align: center;
 }
 
 p {
-  color: #d0ecff; /* Changed: Soft pastel blue for paragraph text */
+  color: white; /* Changed to white for "Welcome, dear user" and "Please enter the following details" */
   font-size: 18px;
   margin-bottom: 30px;
-  text-align: center; /* Keep paragraph centered */
+  text-align: center;
 }
 
-/* Label styling: all labels aligned left and consistent spacing */
 label, legend {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #c6e5f8; /* Changed: Pastel blue-gray for labels */
+  color: #c6e5f8; /* Remains #A3D5FF */
 }
 
-/* Make all inputs/selects/range 100% width inside wrapper */
 input[type="text"],
 input[type="range"],
 input[type="password"],
@@ -66,8 +64,8 @@ select {
   border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 0.8); /* Keep light input background */
-  color: #333; /* Added: Dark text for readability inside inputs */
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #333; /* Keeping input text dark for readability on light input background */
 }
 
 input[type="range"] {
@@ -88,7 +86,7 @@ input[type="range"] {
   align-items: center;
   cursor: pointer;
   font-weight: 500;
-  color: #c6e5f8; /* Changed: Pastel blue-gray for checkbox/radio labels */
+  color: #083d68; /* Remains #A3D5FF */
   margin-right: 15px;
 }
 
@@ -98,14 +96,15 @@ input[type="range"] {
   cursor: pointer;
 }
 
+/* --- Buttons to be Pastel Blue --- */
 button {
   margin: 10px 0;
   padding: 12px 24px;
   font-size: 16px;
   border: none;
   border-radius: 8px;
-  background-color: #a8d3f8; /* Changed: Pastel blue for button background */
-  color: #1a1a1a; /* Changed: Dark text for contrast on pastel blue button */
+  background-color: #ADD8E6; /* Pastel Blue background */
+  color: #333; /* Dark text for contrast on light blue */
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
@@ -113,10 +112,11 @@ button {
 }
 
 button:hover {
-  box-shadow: 0 6px 15px rgba(168, 211, 248, 0.4); /* Changed: Pastel blue shadow on hover */
-  background-color: #c2e0fa; /* Changed: Slightly lighter pastel blue on hover */
+  box-shadow: 0 6px 15px rgba(163, 213, 255, 0.5);
+  background-color: #bee2ff; /* lighter pastel blue on hover */
   transform: scale(1.05);
 }
+
 
 .language-group {
   margin-bottom: 20px;
