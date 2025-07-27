@@ -14,32 +14,36 @@ body {
 }
 
 .login-container {
-  max-width: 800px; /* Changed: Wider container max-width */
-  width: 90%; /* Added: Responsive container width */
-  min-width: 320px; /* Added: Min width for container */
-
+  max-width: 500px;
+  width: 90%;
+  min-width: 320px;
+  box-sizing: border-box;
   margin: 80px auto;
   padding: 40px;
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  text-align: left;
+  text-align: left; /* Ensures general text (like labels) aligns to the left of the container */
   font-size: 16px;
   color: #ffffff;
   position: fixed;
-  box-sizing: border-box; /* Added: Include padding in width */
 }
 
 .login-container h1 {
-  text-align: center;
+  text-align: center; /* Keeps the title centered */
   margin-bottom: 24px;
   font-size: 32px;
   color: #e0f0ff;
 }
 
 .login-form-group {
-  margin-bottom: 20px;
-  text-align: center; /* Added: Center label/input group */
+
+  width: 100%; /* Allows it to be responsive within the container */
+  max-width: 380px; /* Limit the group's width, matching input/button max-width */
+  display: block; /* Ensures margin:auto works */
+  margin: 0 auto 20px auto; /* Centers the form group horizontally, preserving bottom margin */
+  text-align: left; /* Ensures the label text is aligned to the left within this centered group */
+  
 }
 
 .login-form-group label {
@@ -50,10 +54,10 @@ body {
 }
 
 .login-form-group input {
-  width: 100%; /* Changed: Retained 100% width for responsiveness */
-  max-width: 350px; /* Added: Limit input max-width */
-  display: block; /* Added: Enable margin:auto */
-  margin: 0 auto; /* Added: Center input horizontally */
+  width: 100%;
+  max-width: 380px;
+  display: block;
+  margin: 0 auto; /* Keeps input centered within its parent group */
 
   padding: 12px;
   border: none;
@@ -70,11 +74,10 @@ body {
 }
 
 .login-button {
-  width: 100%; /* Retained 100% width for responsiveness */
-  max-width: 350px; /* Added: Limit button max-width */
-  display: block; /* Added: Enable margin:auto */
-  margin: 10px auto; /* Changed: Center button horizontally */
-
+  width: 100%;
+  max-width: 380px;
+  display: block;
+  margin: 10px auto;
   padding: 12px 24px;
   font-size: 16px;
   border: none;
@@ -100,11 +103,10 @@ body {
 }
 
 .register-button {
-  width: 100%; /* Retained 100% width for responsiveness */
-  max-width: 350px; /* Added: Limit button max-width */
-  display: block; /* Added: Enable margin:auto */
-  margin: 12px auto; /* Changed: Center button horizontally */
-
+  width: 100%;
+  max-width: 380px;
+  display: block;
+  margin: 12px auto;
   padding: 12px;
   background-color: #e3f2fd;
   color: #1a1a1a;
@@ -123,7 +125,7 @@ body {
 }
 
 .forgot-password {
-  text-align: center; /* Added: Ensure centering */
+  text-align: center;
   margin-top: 12px;
   font-size: 18px;
   color: #d0ecff;

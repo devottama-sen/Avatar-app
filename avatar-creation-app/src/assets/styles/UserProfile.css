@@ -9,7 +9,7 @@ html, body {
 body {
   background: url('../images/Office3.jpeg') no-repeat center center fixed;
   background-size: cover;
-  color: white;
+  color: white; /* General text color for the body if not overridden */
 }
 
 .main-content {
@@ -24,24 +24,23 @@ body {
   background-color: rgba(0, 0, 0, 0.6);
   padding: 40px;
   border-radius: 15px;
-  /* Changed to left align all labels and inputs */
   text-align: left;
   width: 90%;
   max-width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   font-size: 16px;
-  color: white;
+  color: white; /* General text color inside the wrapper */
 }
 
 h1 {
-  color: white;
+  color: #e0f0ff; /* Changed: Pastel blue for heading */
   font-size: 32px;
   margin-bottom: 10px;
   text-align: center; /* Keep heading centered */
 }
 
 p {
-  color: #d3f0d3;
+  color: #d0ecff; /* Changed: Soft pastel blue for paragraph text */
   font-size: 18px;
   margin-bottom: 30px;
   text-align: center; /* Keep paragraph centered */
@@ -52,7 +51,7 @@ label, legend {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #d3f0d3;
+  color: #c6e5f8; /* Changed: Pastel blue-gray for labels */
 }
 
 /* Make all inputs/selects/range 100% width inside wrapper */
@@ -67,13 +66,15 @@ select {
   border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0.8); /* Keep light input background */
+  color: #333; /* Added: Dark text for readability inside inputs */
 }
 
 input[type="range"] {
   cursor: pointer;
 }
 
-.language-options, 
+.language-options,
 .disability-group {
   display: flex;
   flex-wrap: wrap;
@@ -87,7 +88,7 @@ input[type="range"] {
   align-items: center;
   cursor: pointer;
   font-weight: 500;
-  color: #d3f0d3;
+  color: #c6e5f8; /* Changed: Pastel blue-gray for checkbox/radio labels */
   margin-right: 15px;
 }
 
@@ -103,8 +104,8 @@ button {
   font-size: 16px;
   border: none;
   border-radius: 8px;
-  background-color: #295f2d;
-  color: white;
+  background-color: #a8d3f8; /* Changed: Pastel blue for button background */
+  color: #1a1a1a; /* Changed: Dark text for contrast on pastel blue button */
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
@@ -112,13 +113,13 @@ button {
 }
 
 button:hover {
-  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
-  background-color: #247024;
+  box-shadow: 0 6px 15px rgba(168, 211, 248, 0.4); /* Changed: Pastel blue shadow on hover */
+  background-color: #c2e0fa; /* Changed: Slightly lighter pastel blue on hover */
   transform: scale(1.05);
 }
 
 .language-group {
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 .checkbox-group {

@@ -31,7 +31,7 @@ const Home = () => {
             {userName ? `Welcome, ${userName}` : "Welcome to Avatar Creation"}
           </h1>
           <p className="intro-text">
-            Create your colleagues into their<italic><b>virtual</b></italic> selves
+            Create your colleagues into their <italic><b>virtual</b></italic> selves
           </p>
 
           {userName ? (
