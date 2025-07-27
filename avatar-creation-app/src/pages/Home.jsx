@@ -26,19 +26,23 @@ const Home = () => {
   return (
     <div className="home-body">
       <main className="main-content fade-in">
-        <h1 className="home-heading">
-          {userName ? `Welcome, ${userName}` : "Welcome to Avatar Creation"}
-        </h1>
-        <p className="intro-text">Create your colleagues into their <b>virtual</b> selves</p>
+        <div className="text-box">
+          <h1 className="home-heading">
+            {userName ? `Welcome, ${userName}` : "Welcome to Avatar Creation"}
+          </h1>
+          <p className="intro-text">
+            Create your colleagues into their <b>virtual</b> selves
+          </p>
 
-        {userName ? (
-          <>
-            <Link to="/avatar-details" className="start-button">Continue</Link>
-            <button onClick={handleLogout} className="logout-button">Logout</button>
-          </>
-        ) : (
-          <Link to="/login" className="start-button">Create</Link>
-        )}
+          {userName ? (
+            <>
+              <Link to="/avatar-details" className="start-button">Continue</Link>
+              <button onClick={handleLogout} className="logout-button">Logout</button>
+            </>
+          ) : (
+            <Link to="/login" className="start-button">Create</Link>
+          )}
+        </div>
       </main>
     </div>
   );
