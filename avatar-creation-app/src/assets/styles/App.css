@@ -1,38 +1,37 @@
-.App {
-  text-align: center;
+/* src/assets/styles/App.css */
+
+/* Ensure html and body take full height and hide horizontal overflow */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Hides horizontal scrollbar */
+    /* overflow-y: auto; /* Allow vertical scroll only when content overflows */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* The root React div and the app container should also take full height */
+#root, .app-container {
+    height: 100%;
+    width: 100%; /* Ensure it spans full width to help with flexbox */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensures it's at least viewport height */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.content-wrap {
+    flex: 1; /* Allows main content to grow and push footer down */
+    /* Add padding here if your pages need internal padding */
+    padding-top: 20px; /* Example: add some top padding to content */
+    padding-bottom: 20px; /* Example: add some bottom padding to content */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* Optional: If a specific element within your pages causes horizontal overflow
+   (e.g., a very wide image or table), you might need to apply max-width: 100%
+   to it or hide its specific overflow-x. */
+/* img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+} */

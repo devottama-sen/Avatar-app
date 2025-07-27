@@ -1,17 +1,27 @@
 /* src/assets/styles/Footer.css */
 .main-footer {
-  background-color: #1A2B42; /* A dark shade of blue you liked */
+  background-color: #1A2B42; /* A dark shade of blue */
   color: #a8d3f8; /* A light pastel blue for text */
   text-align: center;
   padding: 20px;
-  position: relative; /* Or fixed if you want it sticky at the bottom of viewport */
-  bottom: 0;
   width: 100%;
-  box-sizing: border-box; /* Include padding in width */
+  box-sizing: border-box;
   font-size: 0.9rem;
-  border-top: 1px solid rgba(168, 211, 248, 0.1); /* Subtle top border */
+  border-top: 1px solid rgba(168, 211, 248, 0.1);
 }
 
 .main-footer p {
-  margin: 0;
+  margin: 5px 0; /* Adjust spacing between lines */
 }
+
+.footer-created-by {
+    font-weight: 500; /* Make it slightly bolder */
+    /* You could also change its color slightly if desired */
+     color: #bde0fe; 
+}
+
+ .footer-acknowledgements {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: rgba(168, 211, 248, 0.8);
+} 
