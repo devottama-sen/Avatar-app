@@ -1,122 +1,123 @@
-/* Login.css */
+/* login.css */
 
 html, body {
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
   height: 100%;
-  background: url('../images/Office3.jpeg') no-repeat center center fixed;
+}
+
+body {
+  background: url('../images/forest.jpeg') no-repeat center center fixed;
   background-size: cover;
-  color: #ffffff;
+  color: white; /* General text color for the body if not overridden */
 }
 
 .login-container {
-  /* Basic positioning and styling */
-  margin: 80px auto; /* Centers the container horizontally with top/bottom margin */
+  max-width: 400px;
+  margin: 80px auto;
   padding: 40px;
-  background-color: rgba(0, 0, 0, 0.6);
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6); /* Keep semi-transparent black for the box */
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   text-align: left;
   font-size: 16px;
-  color: #ffffff;
-
-  /* --- Enhanced Width Control --- */
-  width: 90%;      /* Try to make it take up 90% of its parent's width */
-  max-width: 1000px; /* Set a maximum width of 1000px */
-  min-width: 320px;  /* Ensure it doesn't get too small on mobile-like screens */
-  box-sizing: border-box; /* Crucial: Ensures padding is included within the specified width */
+  color: #ffffff; /* Text color inside the container */
+  position: relative;
 }
 
 .login-container h1 {
   text-align: center;
   margin-bottom: 24px;
   font-size: 32px;
-  color: #e0f0ff; /* pastel blue title */
+  color: #e0f0ff; /* Pastel blue title */
 }
 
-/* Grouped styling for each input field */
 .login-form-group {
   margin-bottom: 20px;
 }
 
 .login-form-group label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: 600;
-  color: #c6e5f8; /* pastel blue-gray */
+  color: #c6e5f8; /* Pastel blue-gray label */
 }
 
 .login-form-group input {
   width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 0.8);
-  color: #333;
-  transition: box-shadow 0.3s ease;
+  background-color: rgba(255, 255, 255, 0.8); /* Keep light input background */
+  color: #333; /* Dark text for readability in input */
 }
 
 .login-form-group input:focus {
   outline: none;
-  box-shadow: 0 0 5px #a8d3f8;
+  box-shadow: 0 0 5px #a8d3f8; /* Pastel blue focus shadow */
 }
 
-/* Main Login button */
 .login-button {
   margin: 10px 0;
   padding: 12px 24px;
   font-size: 16px;
   border: none;
-  border-radius: 10px;
-  background-color: #a8d3f8; /* pastel blue */
-  color: #1a1a1a;
+  border-radius: 8px;
+  background-color: #a8d3f8; /* Pastel blue button */
+  color: #1a1a1a; /* Dark text for contrast on pastel blue */
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .login-button:hover {
-  background-color: #c2e0fa;
-  transform: scale(1.03);
-  box-shadow: 0 6px 15px rgba(168, 211, 248, 0.4);
+  box-shadow: 0 6px 15px rgba(168, 211, 248, 0.4); /* Pastel blue shadow on hover */
+  background-color: #c2e0fa; /* Slightly lighter pastel blue on hover */
+  transform: scale(1.05);
 }
 
-/* Register button */
+.login-message {
+  margin-top: 16px;
+  text-align: center;
+  color: #d0ecff; /* Soft pastel blue for messages */
+  font-weight: 500;
+}
+
 .register-button {
-  margin-top: 12px;
   display: block;
   width: 100%;
   padding: 12px;
-  background-color: #e3f2fd;
-  color: #000;
+  background-color: #e3f2fd; /* Lighter pastel blue for register button */
+  color: #1a1a1a; /* Dark text for contrast */
   font-size: 16px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
+  text-decoration: none;
   text-align: center;
-  cursor: pointer;
+  margin-top: 12px;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .register-button:hover {
-  background-color: #cde7fb;
-  transform: scale(1.03);
-  box-shadow: 0 6px 15px rgba(180, 215, 255, 0.4);
+  background-color: #cde7fb; /* Slightly darker light pastel blue on hover */
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(180, 215, 255, 0.4); /* Pastel blue shadow on hover */
 }
 
-/* Forgot Password */
 .forgot-password {
   text-align: center;
-  margin: 12px 0;
-  font-size: 16px;
-  color: #d0ecff;
+  margin-top: 12px;
+  font-size: 18px;
+  color: #d0ecff; /* Pastel blue for forgot password link */
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
 .forgot-password:hover {
-  color: #ffffff;
+  color: #ffffff; /* White on hover for stronger highlight */
   text-decoration: underline;
 }
