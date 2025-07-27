@@ -11,8 +11,8 @@ html, body {
 }
 
 .login-container {
-  max-width: 1000px;
-  margin: 80px auto;
+  /* Basic positioning and styling */
+  margin: 80px auto; /* Centers the container horizontally with top/bottom margin */
   padding: 40px;
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 20px;
@@ -20,6 +20,12 @@ html, body {
   text-align: left;
   font-size: 16px;
   color: #ffffff;
+
+  /* --- Enhanced Width Control --- */
+  width: 90%;      /* Try to make it take up 90% of its parent's width */
+  max-width: 1000px; /* Set a maximum width of 1000px */
+  min-width: 320px;  /* Ensure it doesn't get too small on mobile-like screens */
+  box-sizing: border-box; /* Crucial: Ensures padding is included within the specified width */
 }
 
 .login-container h1 {
