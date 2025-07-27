@@ -10,114 +10,128 @@ html, body {
 body {
   background: url('../images/forest.jpeg') no-repeat center center fixed;
   background-size: cover;
-  color: white; /* General text color for the body if not overridden */
+  color: white;
 }
 
 .login-container {
-  max-width: 600px;
+  max-width: 800px; /* Changed: Wider container max-width */
+  width: 90%; /* Added: Responsive container width */
+  min-width: 320px; /* Added: Min width for container */
+
   margin: 80px auto;
   padding: 40px;
-  background-color: rgba(0, 0, 0, 0.6); /* Keep semi-transparent black for the box */
+  background-color: rgba(0, 0, 0, 0.6);
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   text-align: left;
   font-size: 16px;
-  color: #ffffff; /* Text color inside the container */
+  color: #ffffff;
   position: fixed;
+  box-sizing: border-box; /* Added: Include padding in width */
 }
 
 .login-container h1 {
   text-align: center;
   margin-bottom: 24px;
   font-size: 32px;
-  color: #e0f0ff; /* Pastel blue title */
+  color: #e0f0ff;
 }
 
 .login-form-group {
   margin-bottom: 20px;
+  text-align: center; /* Added: Center label/input group */
 }
 
 .login-form-group label {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #c6e5f8; /* Pastel blue-gray label */
+  color: #c6e5f8;
 }
 
 .login-form-group input {
-  width: 100%;
+  width: 100%; /* Changed: Retained 100% width for responsiveness */
+  max-width: 350px; /* Added: Limit input max-width */
+  display: block; /* Added: Enable margin:auto */
+  margin: 0 auto; /* Added: Center input horizontally */
+
   padding: 12px;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 0.8); /* Keep light input background */
-  color: #333; /* Dark text for readability in input */
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #333;
 }
 
 .login-form-group input:focus {
   outline: none;
-  box-shadow: 0 0 5px #a8d3f8; /* Pastel blue focus shadow */
+  box-shadow: 0 0 5px #a8d3f8;
 }
 
 .login-button {
-  margin: 10px 0;
+  width: 100%; /* Retained 100% width for responsiveness */
+  max-width: 350px; /* Added: Limit button max-width */
+  display: block; /* Added: Enable margin:auto */
+  margin: 10px auto; /* Changed: Center button horizontally */
+
   padding: 12px 24px;
   font-size: 16px;
   border: none;
   border-radius: 8px;
-  background-color: #a8d3f8; /* Pastel blue button */
-  color: #1a1a1a; /* Dark text for contrast on pastel blue */
+  background-color: #a8d3f8;
+  color: #1a1a1a;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-  width: 100%;
   box-sizing: border-box;
 }
 
 .login-button:hover {
-  box-shadow: 0 6px 15px rgba(168, 211, 248, 0.4); /* Pastel blue shadow on hover */
-  background-color: #c2e0fa; /* Slightly lighter pastel blue on hover */
+  box-shadow: 0 6px 15px rgba(168, 211, 248, 0.4);
+  background-color: #c2e0fa;
   transform: scale(1.05);
 }
 
 .login-message {
   margin-top: 16px;
   text-align: center;
-  color: #d0ecff; /* Soft pastel blue for messages */
+  color: #d0ecff;
   font-weight: 500;
 }
 
 .register-button {
-  display: block;
-  width: 100%;
+  width: 100%; /* Retained 100% width for responsiveness */
+  max-width: 350px; /* Added: Limit button max-width */
+  display: block; /* Added: Enable margin:auto */
+  margin: 12px auto; /* Changed: Center button horizontally */
+
   padding: 12px;
-  background-color: #e3f2fd; /* Lighter pastel blue for register button */
-  color: #1a1a1a; /* Dark text for contrast */
+  background-color: #e3f2fd;
+  color: #1a1a1a;
   font-size: 16px;
   border: none;
   border-radius: 8px;
   text-decoration: none;
   text-align: center;
-  margin-top: 12px;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .register-button:hover {
-  background-color: #cde7fb; /* Slightly darker light pastel blue on hover */
+  background-color: #cde7fb;
   transform: scale(1.05);
-  box-shadow: 0 6px 15px rgba(180, 215, 255, 0.4); /* Pastel blue shadow on hover */
+  box-shadow: 0 6px 15px rgba(180, 215, 255, 0.4);
 }
 
 .forgot-password {
-  text-align: center;
+  text-align: center; /* Added: Ensure centering */
   margin-top: 12px;
   font-size: 18px;
-  color: #d0ecff; /* Pastel blue for forgot password link */
+  color: #d0ecff;
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
 .forgot-password:hover {
-  color: #ffffff; /* White on hover for stronger highlight */
+  color: #ffffff;
   text-decoration: underline;
 }
