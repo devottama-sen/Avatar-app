@@ -29,7 +29,7 @@ const Home = () => {
         <h1 className="home-heading">
           {userName ? `Welcome, ${userName}` : "Welcome to Avatar Creation"}
         </h1>
-        <p className="intro-text">Craft your digital identity, beautifully.</p>
+        <p className="intro-text">Create your colleagues into their <b>virtual</b> selves</p>
 
         {userName ? (
           <>

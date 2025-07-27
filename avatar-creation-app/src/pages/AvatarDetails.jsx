@@ -115,7 +115,8 @@ const AvatarDetails = () => {
       <div className="avatar-wrapper">
         <div className="avatar-form-section">
           <h1 className="avatar-details-heading"><em>Avatar Prompt</em></h1>
-          <p className="avatar-details-text"><em>Describe your avatar and let AI create it.</em></p>
+          <p className="avatar-details-text"><em>Describe your colleagues and let AI create it.</em></p>
+          <p className="avatar-details-text"><em>Please add the world <b><strong>realistic</strong></b> to your prompt</em></p>
 
           {remaining !== undefined && (
             <p className="avatar-limit-message">
@@ -131,7 +132,7 @@ const AvatarDetails = () => {
                 id="prompt"
                 name="prompt"
                 rows={4}
-                placeholder="e.g., A futuristic female warrior with silver armor and glowing eyes"
+                placeholder="e.g., A realistic depiction of a tall man with short curly brown hair, a trimmed beard, and a warm smile, dressed in a grey suit and blue tie"
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
               />

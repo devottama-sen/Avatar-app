@@ -179,6 +179,17 @@ const UserProfile = () => {
           />
         </div>
 
+        <div className="form-group">
+          <label htmlFor="country">Country of Occupation</label>
+          <input
+            id="country"
+            type="text"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            placeholder="Enter your country"
+          />
+        </div>
+
         <div className="button-row">
           <button onClick={handleSubmit} id="submitButton" type="button">Submit</button>
           <Link to="/">
