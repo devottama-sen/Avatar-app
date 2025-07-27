@@ -9,7 +9,7 @@
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 40px;
-  color: #ffffff;
+  color: #ffffff; /* Keeping title white as it's outside the card */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -21,31 +21,28 @@
 }
 
 .avatar-card {
-  background-color: #ffffff;
-  border: 1px solid #ddd;
+  /* Changed: Slightly translucent dark blue background */
+  background-color: rgba(26, 43, 66, 0.7); /* Deep Navy with 70% opacity */
+  /* Changed: Border to be a subtle, lighter blue tint or rgba white */
+  border: 1px solid rgba(168, 211, 248, 0.3); /* Pastel blue border, slightly translucent */
   border-radius: 16px;
   padding: 20px;
   width: 280px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  /* Changed: Box shadow to complement the blue theme */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Darker shadow for depth */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #006400;
+  /* Changed: General text color for the card to a visible pastel blue */
+  color: #a8d3f8; /* Pastel blue for overall text inside card */
 }
 
 .avatar-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-}
-
-
-.avatar-card h4 {
-  margin-bottom: 16px;
-  font-size: 18px;
-  color: #333;
-  font-weight: 700;
+  /* Changed: Box shadow on hover to complement the blue theme */
+  box-shadow: 0 6px 16px rgba(168, 211, 248, 0.3); /* Pastel blue shadow on hover */
 }
 
 .avatar-image {
@@ -56,9 +53,17 @@
   margin-bottom: 16px;
 }
 
+/* This rule will now ensure all specified text elements are pastel blue, visible against the dark card. */
 .avatar-card h4,
 .avatar-card p,
 .avatar-card strong {
-  color: #a8d3f8; /* Ensure headers and paragraphs are dark green */
+  color: #a8d3f8; /* Ensures headers and paragraphs are pastel blue */
 }
 
+/* Specific adjustment for h4 to potentially override if needed, but the above rule handles it */
+.avatar-card h4 {
+  margin-bottom: 16px;
+  font-size: 18px;
+  /* color: #333; This line is now effectively overridden by the more specific rule below it */
+  font-weight: 700;
+}
