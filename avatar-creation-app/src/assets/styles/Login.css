@@ -1,4 +1,4 @@
-/* login.css */
+/* login.css - Pastel Blue Version */
 
 html, body {
   margin: 0;
@@ -14,13 +14,13 @@ html, body {
   max-width: 400px;
   margin: 80px auto;
   padding: 40px;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.55);
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   text-align: left;
   font-size: 16px;
   color: white;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -28,7 +28,7 @@ html, body {
   text-align: center;
   margin-bottom: 24px;
   font-size: 32px;
-  color: white;
+  color: #ffffff;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
@@ -40,7 +40,7 @@ html, body {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #d3f0d3; /* soft green */
+  color: #b8e0fa; /* pastel blue */
 }
 
 .login-form-group input {
@@ -50,24 +50,24 @@ html, body {
   border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
-  background-color: #f3fdf3;
-  color: #222;
+  background-color: #f5faff;
+  color: #1e1e1e;
 }
 
 .login-form-group input:focus {
-  outline: 2px solid #aee0ae;
-  background-color: #ffffff;
+  outline: 2px solid #a3d5ff; /* pastel blue border on focus */
+  background-color: white;
 }
 
-/* Primary button */
+/* Pastel Blue Login Button */
 .login-button {
   margin: 10px 0;
   padding: 12px 24px;
   font-size: 16px;
   border: none;
   border-radius: 8px;
-  background-color: #295f2d;
-  color: white;
+  background-color: #a3d5ff; /* pastel blue */
+  color: #003366; /* dark text for contrast */
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
@@ -75,26 +75,26 @@ html, body {
 }
 
 .login-button:hover {
-  background-color: #247024;
-  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.3);
+  background-color: #bee2ff; /* lighter pastel blue */
+  box-shadow: 0 6px 15px rgba(163, 213, 255, 0.4);
   transform: scale(1.05);
 }
 
-/* Error or status message */
+/* Error or info message */
 .login-message {
   margin-top: 16px;
   text-align: center;
-  color: #ffbaba;
+  color: #ffd6d6;
   font-weight: 500;
 }
 
-/* Register button (secondary action) */
+/* Register Button */
 .register-button {
   display: block;
   width: 100%;
   padding: 12px;
-  background-color: #E3EED4;
-  color: #1f1f1f;
+  background-color: #d7ecff;
+  color: #002244;
   font-size: 16px;
   border: none;
   border-radius: 8px;
@@ -105,22 +105,22 @@ html, body {
 }
 
 .register-button:hover {
-  background-color: #d4eace;
+  background-color: #e6f2ff;
   transform: scale(1.05);
-  box-shadow: 0 6px 15px rgba(76, 175, 80, 0.2);
+  box-shadow: 0 6px 15px rgba(163, 213, 255, 0.2);
 }
 
-/* Forgot password link */
+/* Forgot Password */
 .forgot-password {
   text-align: center;
   margin-top: 12px;
   font-size: 16px;
-  color: #aee0ae;
+  color: #cfeaff;
   cursor: pointer;
   transition: color 0.3s ease;
 }
 
 .forgot-password:hover {
-  color: #c2f5c2;
+  color: #e3f3ff;
   text-decoration: underline;
 }
