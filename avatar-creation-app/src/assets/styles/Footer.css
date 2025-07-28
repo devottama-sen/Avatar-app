@@ -1,36 +1,25 @@
-/* src/assets/styles/Footer.css */
-.main-footer {
-  background-color: #1A2B42; /* A dark shade of blue */
-  color: #a8d3f8; /* A light pastel blue for text */
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#root, .App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1; /* This will push the footer down */
+}
+
+footer {
+  background-color: #1A2B42;
+  color: #a8d3f8;
   text-align: center;
-  padding: 15px 0px; /* Increased horizontal padding (left/right) to 40px */
-  width: 100%;
-  box-sizing: border-box;
+  padding: 15px 0;
   font-size: 0.9rem;
   border-top: 1px solid rgba(168, 211, 248, 0.1);
+  flex-shrink: 0;
 }
-
-.main-footer p {
-  margin: 3px 0; /* Keep a small margin for paragraphs */
-  line-height: 1.4;
-  white-space: nowrap; /* Prevent line breaks within the paragraph if content fits */
-  overflow: hidden; /* Hide overflow if nowrap causes issues on very small screens */
-  text-overflow: ellipsis; /* Add ellipsis (...) if text gets cut off */
-}
-
-.footer-line-separator {
-    margin: 0 8px; /* Add horizontal space around the separator line */
-    color: #a8d3f8; /* Ensure separator color matches text */
-}
-
-.footer-created-by,
-.footer-mentored-by {
-    font-weight: 500; /* Make them slightly bolder */
-    white-space: nowrap; /* Prevent these sections from breaking */
-}
-
-/* If you previously had .footer-acknowledgements and .footer-created-by 
-   as separate <p> tags, ensure those rules are cleaned up or applied to the new spans. */
-/* You might not need this if all text is in one <p> now: */
-/* .main-footer p:first-child { margin-top: 0; } */
-/* .main-footer p:last-child { margin-bottom: 0; } */

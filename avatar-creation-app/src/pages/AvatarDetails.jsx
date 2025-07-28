@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import '../assets/styles/App.css';
 import '../assets/styles/AvatarUnified.css';
-import BASE_URL from '../api'; // ✅ Importing from shared config
+import BASE_URL from '../api';
 
 const AvatarDetails = () => {
   const [prompt, setPrompt] = useState('');
@@ -93,8 +94,7 @@ const AvatarDetails = () => {
       }
 
       const data = await response.json();
-      console.log("Full response from backend:", data);
-       setImageBase64(`data:image/png;base64,${data.image}`);
+      setImageBase64(`data:image/png;base64,${data.image}`);
       setRemaining(prev => (prev !== undefined ? prev - 1 : 0));
     } catch (err) {
       console.error('Error:', err);
@@ -116,7 +116,7 @@ const AvatarDetails = () => {
         <div className="avatar-form-section">
           <h1 className="avatar-details-heading"><em>Avatar Prompt</em></h1>
           <p className="avatar-details-text"><em>Describe your colleagues and let AI create it.</em></p>
-          <p className="avatar-details-text"><em>Please add the world <b><strong>realistic</strong></b> to your prompt</em></p>
+          <p className="avatar-details-text"><em>Please add the word <strong>realistic</strong> to your prompt</em></p>
 
           {remaining !== undefined && (
             <p className="avatar-limit-message">
@@ -156,6 +156,16 @@ const AvatarDetails = () => {
                 Reset
               </button>
             </div>
+
+            <div className="show-all-wrapper">
+              <button
+                type="button"
+                className="view-all-button"
+                onClick={() => history.push('/avatars')}
+              >
+                Show All Generated Avatars
+              </button>
+            </div>
           </form>
 
           {error && <p className="error-text">{error}</p>}
@@ -169,10 +179,6 @@ const AvatarDetails = () => {
             </div>
           </div>
         )}
-
-        <button type="button" onClick={() => history.push('/avatars')}>
-          Show All Generated Avatars
-        </button>
       </div>
     </div>
   );

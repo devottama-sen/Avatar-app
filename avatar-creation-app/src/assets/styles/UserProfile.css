@@ -1,4 +1,14 @@
 /* src/assets/styles/UserProfile.css */
+
+/*
+  These global-like rules (html, body, .main-content) should generally be managed
+  by App.css for consistent overall layout. If they are conflicting here,
+  it means UserProfile.css is being loaded very early, or these specific rules
+  are overriding App.css. For best practice, keep global body/html/main-content
+  styles in App.css. If you're encountering issues, comment them out here
+  and ensure App.css handles them.
+*/
+/*
 html, body {
   margin: 0;
   padding: 0;
@@ -11,14 +21,18 @@ body {
   background-size: cover;
 }
 
-.main-content {
+.main-content { // This might be conflicting with .content-wrap in App.css
   display: flex;
   justify-content: center;
   align-items: center;
   flex-grow: 1;
   padding: 20px 0;
 }
+*/
 
+/* * User Profile Specific Styles * */
+
+/* Ensure the wrapper itself gets its intended background and shadow */
 .user-profile-wrapper {
   background-color: rgba(0, 0, 0, 0.6);
   padding: 40px;
@@ -28,35 +42,40 @@ body {
   max-width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   font-size: 16px;
-  color: #A3D5FF; /* General text color as previously requested (affects default text) */
+  color: #A3D5FF; /* General text color for elements directly in wrapper */
   box-sizing: border-box;
 }
 
-h1 {
+/* Increase specificity for all headings within the user profile wrapper */
+.user-profile-wrapper h1 {
   color: white; /* Changed to white for "User Details" */
   font-size: 32px;
   margin-bottom: 10px;
   text-align: center;
 }
 
-p {
+/* Increase specificity for all paragraphs within the user profile wrapper */
+.user-profile-wrapper p {
   color: white; /* Changed to white for "Welcome, dear user" and "Please enter the following details" */
   font-size: 18px;
   margin-bottom: 30px;
   text-align: center;
 }
 
-label, legend {
+/* Increase specificity for all labels and legends within the user profile wrapper */
+.user-profile-wrapper label,
+.user-profile-wrapper legend {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #c6e5f8; /* Remains #A3D5FF */
+  color: #c6e5f8; /* Specific color for labels */
 }
 
-input[type="text"],
-input[type="range"],
-input[type="password"],
-select {
+/* Increase specificity for all input types and select within the user profile wrapper */
+.user-profile-wrapper input[type="text"],
+.user-profile-wrapper input[type="range"],
+.user-profile-wrapper input[type="password"],
+.user-profile-wrapper select {
   width: 100%;
   padding: 12px;
   margin-bottom: 16px;
@@ -65,39 +84,41 @@ select {
   font-size: 16px;
   box-sizing: border-box;
   background-color: rgba(255, 255, 255, 0.8);
-  color: #333; /* Keeping input text dark for readability on light input background */
+  color:black; /* Keeping input text dark for readability on light input background */
 }
 
-input[type="range"] {
+.user-profile-wrapper input[type="range"] {
   cursor: pointer;
 }
 
-.language-options,
-.disability-group {
+.user-profile-wrapper .language-options,
+.user-profile-wrapper .disability-group {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 9px;
 }
 
-.checkbox-label,
-.radio-label {
+/* Increase specificity for checkbox/radio labels within the user profile wrapper */
+.user-profile-wrapper .checkbox-label,
+.user-profile-wrapper .radio-label {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
   font-weight: 500;
-  color: #083d68; /* Remains #A3D5FF */
+  color: #083d68; /* Specific color for checkbox/radio labels */
   margin-right: 15px;
 }
 
-.checkbox-label input,
-.radio-label input {
+.user-profile-wrapper .checkbox-label input,
+.user-profile-wrapper .radio-label input {
   margin-right: 8px;
   cursor: pointer;
 }
 
-/* --- Buttons to be Pastel Blue --- */
-button {
+/* --- Buttons to be Pastel Blue (Specific to UserProfile) --- */
+/* Increase specificity for ALL buttons within the user profile wrapper */
+.user-profile-wrapper button {
   margin: 10px 0;
   padding: 12px 24px;
   font-size: 16px;
@@ -111,18 +132,18 @@ button {
   box-sizing: border-box;
 }
 
-button:hover {
+.user-profile-wrapper button:hover {
   box-shadow: 0 6px 15px rgba(163, 213, 255, 0.5);
-  background-color: #bee2ff; /* lighter pastel blue on hover */
+  background-color: #bee2ff; /* Lighter pastel blue on hover */
   transform: scale(1.05);
 }
 
 
-.language-group {
+.user-profile-wrapper .language-group {
   margin-bottom: 20px;
 }
 
-.checkbox-group {
+.user-profile-wrapper .checkbox-group {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -130,7 +151,7 @@ button:hover {
   margin-bottom: 1rem;
 }
 
-.checkbox-item {
+.user-profile-wrapper .checkbox-item {
   display: flex;
   align-items: center;
   gap: 0.3rem;
