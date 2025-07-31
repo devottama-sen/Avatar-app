@@ -62,76 +62,82 @@ const AvatarDetails = () => {
   }, [history]);
 
   const handleGenerate = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const storedUserId = localStorage.getItem('user_id');
-    const storedPassword = localStorage.getItem('user_password');
-    const storedAge = JSON.parse(localStorage.getItem('age'));
-    const storedGender = localStorage.getItem('gender');
-    const storedEthnicity = localStorage.getItem('ethnicity');
-    const storedOccupation = localStorage.getItem('occupation');
-    const storedCountryOfOrigin = localStorage.getItem('countryOfOrigin');
-    const storedCountryOfOccupation = localStorage.getItem('countryOfOccupation');
-    const storedLanguages = JSON.parse(localStorage.getItem('languages'));
-    const storedCountry = localStorage.getItem('country');
+  const storedUserId = localStorage.getItem('user_id');
+  const storedPassword = localStorage.getItem('user_password');
+  const storedAge = JSON.parse(localStorage.getItem('age'));
+  const storedGender = localStorage.getItem('gender');
+  const storedEthnicity = localStorage.getItem('ethnicity');
+  const storedOccupation = localStorage.getItem('occupation');
+  const storedCountryOfOrigin = localStorage.getItem('countryOfOrigin');
+  const storedCountryOfOccupation = localStorage.getItem('countryOfOccupation');
+  const storedLanguages = JSON.parse(localStorage.getItem('languages'));
+  const storedCountry = localStorage.getItem('country');
 
-    if (!storedUserId || !prompt.trim() || !storedPassword || !storedAge || !storedGender || !storedEthnicity || !storedOccupation || !storedCountryOfOrigin || !storedCountryOfOccupation || !storedLanguages) {
-      setError('User profile data is incomplete. Please go back to your profile and fill in all details.');
-      return;
-    }
+  if (!storedUserId || !prompt.trim() || !storedPassword || !storedAge || !storedGender || !storedEthnicity || !storedOccupation || !storedCountryOfOrigin || !storedCountryOfOccupation || !storedLanguages) {
+    setError('User profile data is incomplete. Please go back to your profile and fill in all details.');
+    return;
+  }
 
-    if (remaining <= 0) {
-      setError('You’ve reached your 10-image limit.');
-      return;
-    }
+  if (remaining <= 0) {
+    setError('You’ve reached your 10-image limit.');
+    return;
+  }
 
-    setError('');
-    setLoading(true);
+  setError('');
+  setLoading(true);
 
-    try {
-      const response = await fetch(`${BASE_URL}/store-user-avatar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: storedUserId,
-          user_password: storedPassword,
-          prompt: prompt,
-          country: storedCountry || 'unknown',
-          age: storedAge,
-          gender: storedGender,
-          ethnicity: storedEthnicity,
-          occupation: storedOccupation,
-          countryOfOrigin: storedCountryOfOrigin,
-          countryOfOccupation: storedCountryOfOccupation,
-          languages: storedLanguages,
-        }),
-      });
+  try {
+    const response = await fetch(`${BASE_URL}/store-user-avatar`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: storedUserId,
+        user_password: storedPassword,
+        prompt: prompt,
+        country: storedCountry || 'unknown',
+        age: storedAge,
+        gender: storedGender,
+        ethnicity: storedEthnicity,
+        occupation: storedOccupation,
+        countryOfOrigin: storedCountryOfOrigin,
+        countryOfOccupation: storedCountryOfOccupation,
+        languages: storedLanguages,
+      }),
+    });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        let errorMessage = 'Failed to generate avatar.';
+    if (!response.ok) {
+      let errorText = await response.text();
+      let errorMessage = 'Failed to generate avatar. Please check backend logs.';
+
+      // Attempt to parse JSON only if the content type is JSON
+      try {
+        const errorData = JSON.parse(errorText);
         if (typeof errorData.detail === 'string') {
           errorMessage = errorData.detail;
         } else if (Array.isArray(errorData.detail)) {
           errorMessage = errorData.detail.map(err => `${err.loc.join('.')} - ${err.msg}`).join('; ');
         }
-        throw new Error(errorMessage);
+      } catch (e) {
+        // Fallback for non-JSON responses
+        console.error('Non-JSON error response from server:', errorText);
+        errorMessage = `Server error: ${response.status} - ${errorText.substring(0, 100)}`;
       }
 
-      const data = await response.json();
-      setImageBase64(`data:image/png;base64,${data.image}`);
-      setRemaining(prev => (prev !== undefined ? prev - 1 : 0));
-    } catch (err) {
-      console.error('Error:', err);
-      if (err.name === 'SyntaxError') {
-        setError('Server returned a non-JSON response. Please check the backend logs.');
-      } else {
-        setError(err.message);
-      }
-    } finally {
-      setLoading(false);
+      throw new Error(errorMessage);
     }
-  };
+
+    const data = await response.json();
+    setImageBase64(`data:image/png;base64,${data.image}`);
+    setRemaining(prev => (prev !== undefined ? prev - 1 : 0));
+  } catch (err) {
+    console.error('Error:', err);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleReset = () => {
     setPrompt('');
