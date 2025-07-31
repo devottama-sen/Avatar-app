@@ -31,7 +31,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://avatar-app.vercel.app",  # ✅ Production domain
+        "https://avatar-app.vercel.app",   # ✅ Production domain
         "https://avatar-app-mu.vercel.app",
         "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
         "http://localhost:3000",
@@ -177,6 +177,8 @@ async def store_user_details(req: UserDetailsRequest):
             "gender": req.gender,
             "ethnicity": req.ethnicity,
             "occupation": req.occupation,
+            "countryOfOrigin": req.countryOfOrigin,
+            "countryOfOccupation": req.countryOfOccupation,
             "languages": req.languages,
             "timestamp": datetime.utcnow()
         }
