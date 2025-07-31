@@ -47,28 +47,58 @@ const UserProfile = ({ onAuthSuccess }) => {
     );
   }, []);
 
-  const handleSaveProfile = () => {
-    const trimmedId = userId.trim();
-    const trimmedCountryOfOrigin = countryOfOrigin.trim();
-    const trimmedCountryOfOccupation = countryOfOccupation.trim();
+const handleSaveProfile = async () => {
+  const trimmedId = userId.trim();
+  const trimmedCountryOfOrigin = countryOfOrigin.trim();
+  const trimmedCountryOfOccupation = countryOfOccupation.trim();
 
-    if (!trimmedId || !trimmedCountryOfOrigin || !trimmedCountryOfOccupation) {
-      alert("Please enter all your Details.");
-      return false;
+  if (!trimmedId || !trimmedCountryOfOrigin || !trimmedCountryOfOccupation) {
+    alert("Please enter all your Details.");
+    return false;
+  }
+
+  // Save to localStorage
+  localStorage.setItem("user_id", trimmedId);
+  localStorage.setItem("user_password", password);
+  localStorage.setItem("countryOfOrigin", trimmedCountryOfOrigin);
+  localStorage.setItem("countryOfOccupation", trimmedCountryOfOccupation);
+  localStorage.setItem("age", age);
+  localStorage.setItem("gender", gender);
+  localStorage.setItem("ethnicity", ethnicity);
+  localStorage.setItem("occupation", occupation);
+  localStorage.setItem("languages", JSON.stringify(languages));
+
+  // Send to FastAPI backend
+  try {
+    const response = await fetch("https://avatar-app-98is.onrender.com/store-user-details", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id: trimmedId,
+        age: age, // this is an array
+        gender,
+        ethnicity,
+        occupation,
+        languages // this is also an array
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send user details");
     }
 
-    localStorage.setItem("user_id", trimmedId);
-    localStorage.setItem("user_password", password);
-    localStorage.setItem("countryOfOrigin", trimmedCountryOfOrigin);
-    localStorage.setItem("countryOfOccupation", trimmedCountryOfOccupation);
-    localStorage.setItem("age", age);
-    localStorage.setItem("gender", gender);
-    localStorage.setItem("ethnicity", ethnicity);
-    localStorage.setItem("occupation", occupation);
-    localStorage.setItem("languages", JSON.stringify(languages));
+    const result = await response.json();
+    console.log("User details stored on server:", result);
+  } catch (error) {
+    console.error("Error storing to backend:", error);
+    alert("Failed to store user details on the server.");
+    return false;
+  }
 
-    return true;
-  };
+  return true;
+};
 
   const handleSubmit = () => {
     if (handleSaveProfile()) {
