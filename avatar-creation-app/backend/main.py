@@ -31,9 +31,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://avatar-app.vercel.app",   # ✅ Production domain
-        "https://avatar-app-mu.vercel.app",
-        "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
+        "https://avatar-app.vercel.app", 
         "http://localhost:3000",
         "http://0.0.0.0:3000"
     ],
@@ -64,10 +62,10 @@ class UserDetailsRequest(BaseModel):
     gender: str
     ethnicity: str
     occupation: str
-    countryOfOrigin: str
-    countryOfOccupation: str
+    countryOfOrigin: str # This was missing or incorrectly defined
+    countryOfOccupation: str # This was missing or incorrectly defined
     languages: List[str]
-
+    
 # Helper function to make HTTP requests
 async def fetch(url: str, method: str, headers: dict, body: str = None, timeout: int = 30, verify_ssl: bool = True):
     """
@@ -202,7 +200,7 @@ async def store_user_avatar(req: UserAvatarRequest):
 
         user_doc = {
             "user_id": req.user_id,
-            "country": req.country,
+            "countryofOrigin": req.countryOfOrigin,
             "prompt": req.prompt,
             "image_binary": img_bytes,
             "timestamp": datetime.utcnow()
