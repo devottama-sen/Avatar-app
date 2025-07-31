@@ -7,7 +7,9 @@ import httpx # Ensure httpx is imported for the fetch function
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
+from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 from pydantic import BaseModel
 from pymongo import MongoClient
 import uvicorn
@@ -20,6 +22,8 @@ MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
 client = MongoClient(MONGO_URI)
 db = client["avatarDB"]
 users_collection = db["users"]
+user_details_collection = db["userDetails"]
+
 
 # FastAPI app
 app = FastAPI()
@@ -42,9 +46,16 @@ app.add_middleware(
 # Request model
 class UserAvatarRequest(BaseModel):
     user_id: str
-    country: str
+    user_password: str
     prompt: str
-
+    country: str
+    age: List[str]
+    gender: str
+    ethnicity: str
+    occupation: str
+    countryOfOrigin: str
+    countryOfOccupation: str
+    languages: List[str]
 # Helper function to make HTTP requests
 async def fetch(url: str, method: str, headers: dict, body: str = None, timeout: int = 30, verify_ssl: bool = True):
     """
@@ -164,6 +175,20 @@ async def store_user_avatar(req: UserAvatarRequest):
             "timestamp": datetime.utcnow()
         }
         users_collection.insert_one(user_doc)
+
+        # Also save full user details
+        user_details_doc = {
+            "user_id": req.user_id,
+            "user_password": req.user_password,
+            "age": req.age,
+            "gender": req.gender,
+            "ethnicity": req.ethnicity,
+            "occupation": req.occupation,
+            "countryOfOrigin": req.countryOfOrigin,
+            "countryOfOccupation": req.countryOfOccupation,
+            "languages": req.languages
+        }
+        user_details_collection.insert_one(user_details_doc)
 
         return {
             "message": "User and avatar details stored successfully!",
