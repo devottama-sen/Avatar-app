@@ -70,7 +70,7 @@ const handleSaveProfile = async () => {
 
   // Send to FastAPI backend
   try {
-    const response = await fetch("https://avatar-app-98is.onrender.com/store-user-details", {
+    const response = await fetch("https://avatar-app-98is.onrender.com/store-user-avatar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

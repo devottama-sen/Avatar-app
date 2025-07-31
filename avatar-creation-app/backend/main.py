@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query
 from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from pymongo import MongoClient
 import uvicorn
@@ -24,7 +24,6 @@ db = client["avatarDB"]
 users_collection = db["users"]
 user_details_collection = db["userDetails"]
 
-
 # FastAPI app
 app = FastAPI()
 
@@ -32,7 +31,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://avatar-app.vercel.app",   # ✅ Production domain
+        "https://avatar-app.vercel.app",  # ✅ Production domain
         "https://avatar-app-mu.vercel.app",
         "https://avatar-pi584x5sc-devottama-sens-projects.vercel.app",
         "http://localhost:3000",
@@ -43,7 +42,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Request model
+# Request model for creating an avatar
 class UserAvatarRequest(BaseModel):
     user_id: str
     user_password: str
@@ -56,6 +55,19 @@ class UserAvatarRequest(BaseModel):
     countryOfOrigin: str
     countryOfOccupation: str
     languages: List[str]
+
+# Request model for just storing user details
+class UserDetailsRequest(BaseModel):
+    user_id: str
+    user_password: Optional[str]
+    age: List[str]
+    gender: str
+    ethnicity: str
+    occupation: str
+    countryOfOrigin: str
+    countryOfOccupation: str
+    languages: List[str]
+
 # Helper function to make HTTP requests
 async def fetch(url: str, method: str, headers: dict, body: str = None, timeout: int = 30, verify_ssl: bool = True):
     """
@@ -77,7 +89,6 @@ async def fetch(url: str, method: str, headers: dict, body: str = None, timeout:
             # Log network-related errors
             print(f"Network Error during fetch to {url}: {e}")
             raise HTTPException(status_code=503, detail=f"Network error connecting to external API: {e}")
-
 
 # Avatar generation using imagen-3.0-generate-002
 async def generate_avatar_bytes(prompt: str) -> bytes:
@@ -155,6 +166,26 @@ async def get_avatar_count(user_id: str = Query(..., alias="userId")):
     except Exception as e:
         print(f"Error getting avatar count: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/store-user-details")
+async def store_user_details(req: UserDetailsRequest):
+    try:
+        user_details_doc = {
+            "user_id": req.user_id,
+            "user_password": req.user_password,
+            "age": req.age,
+            "gender": req.gender,
+            "ethnicity": req.ethnicity,
+            "occupation": req.occupation,
+            "languages": req.languages,
+            "timestamp": datetime.utcnow()
+        }
+        # Assuming you want to replace previous details or update them
+        user_details_collection.replace_one({"user_id": req.user_id}, user_details_doc, upsert=True)
+        return {"message": "User details stored successfully!"}
+    except Exception as e:
+        print(f"An unexpected error occurred in store_user_details: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to store user details: {str(e)}")
 
 @app.post("/store-user-avatar")
 async def store_user_avatar(req: UserAvatarRequest):
@@ -342,4 +373,3 @@ async def diagnose_imagen_direct(verify_ssl: bool = Query(True, description="Set
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", 8000)), log_level="info")
-
