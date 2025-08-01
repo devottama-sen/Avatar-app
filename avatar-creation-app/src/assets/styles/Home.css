@@ -32,6 +32,10 @@
     text-align: center;
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative; /* This is key for positioning the info button */
 }
 
 .home-heading {
@@ -103,3 +107,109 @@
     transform: scale(1.05);
 }
 
+/* Old style for the info text - now hidden as the text is in the modal */
+.study-info {
+    display: none;
+}
+
+/* New container for the info icon and button */
+.info-button-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* New "About Project" button style, now hidden by default */
+.about-button {
+    padding: 10px 25px;
+    font-size: 1rem;
+    border: 1px solid #a3d5ff;
+    background-color: transparent;
+    color: #a3d5ff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(10px);
+    white-space: nowrap;
+}
+
+
+.info-icon {
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.info-icon:hover {
+    transform: scale(1.2);
+}
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    color: #333;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    animation: scaleIn 0.3s ease-out;
+}
+
+.modal-close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+.modal-close-button:hover {
+    color: #000;
+}
+
+.modal-title {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #003366;
+}
+
+.modal-text {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
